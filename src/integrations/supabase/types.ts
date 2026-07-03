@@ -65,6 +65,287 @@ export type Database = {
         }
         Relationships: []
       }
+      email_campaigns: {
+        Row: {
+          body_html: string
+          created_at: string
+          created_by: string | null
+          from_email: string | null
+          from_name: string | null
+          id: string
+          name: string
+          recipients_count: number
+          scheduled_at: string | null
+          segment: string
+          sent_at: string | null
+          status: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          body_html: string
+          created_at?: string
+          created_by?: string | null
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          name: string
+          recipients_count?: number
+          scheduled_at?: string | null
+          segment?: string
+          sent_at?: string | null
+          status?: string
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          body_html?: string
+          created_at?: string
+          created_by?: string | null
+          from_email?: string | null
+          from_name?: string | null
+          id?: string
+          name?: string
+          recipients_count?: number
+          scheduled_at?: string | null
+          segment?: string
+          sent_at?: string | null
+          status?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      inventory_movements: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          delta: number
+          id: string
+          product_id: string
+          reason: string
+          reference_order: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          delta: number
+          id?: string
+          product_id: string
+          reason: string
+          reference_order?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          delta?: number
+          id?: string
+          product_id?: string
+          reason?: string
+          reference_order?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inventory_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inventory_movements_reference_order_fkey"
+            columns: ["reference_order"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      order_items: {
+        Row: {
+          created_at: string
+          id: string
+          image_snapshot: string | null
+          is_subscription: boolean
+          name_snapshot: string
+          order_id: string
+          product_id: string | null
+          quantity: number
+          sku_snapshot: string | null
+          subscription_interval: string | null
+          unit_price_ngn: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_snapshot?: string | null
+          is_subscription?: boolean
+          name_snapshot: string
+          order_id: string
+          product_id?: string | null
+          quantity: number
+          sku_snapshot?: string | null
+          subscription_interval?: string | null
+          unit_price_ngn: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_snapshot?: string | null
+          is_subscription?: boolean
+          name_snapshot?: string
+          order_id?: string
+          product_id?: string | null
+          quantity?: number
+          sku_snapshot?: string | null
+          subscription_interval?: string | null
+          unit_price_ngn?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_items_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          admin_notes: string | null
+          balance_amount_ngn: number
+          created_at: string
+          currency: string
+          customer_notes: string | null
+          deposit_amount_ngn: number
+          email: string
+          full_name: string
+          id: string
+          install_address: Json | null
+          order_number: string
+          paid_amount_ngn: number
+          payment_status: Database["public"]["Enums"]["payment_status"]
+          phone: string | null
+          shipping_address: Json
+          shipping_ngn: number
+          status: Database["public"]["Enums"]["order_status"]
+          subtotal_ngn: number
+          total_ngn: number
+          tracking_number: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          balance_amount_ngn?: number
+          created_at?: string
+          currency?: string
+          customer_notes?: string | null
+          deposit_amount_ngn?: number
+          email: string
+          full_name: string
+          id?: string
+          install_address?: Json | null
+          order_number?: string
+          paid_amount_ngn?: number
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          phone?: string | null
+          shipping_address?: Json
+          shipping_ngn?: number
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal_ngn?: number
+          total_ngn?: number
+          tracking_number?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          balance_amount_ngn?: number
+          created_at?: string
+          currency?: string
+          customer_notes?: string | null
+          deposit_amount_ngn?: number
+          email?: string
+          full_name?: string
+          id?: string
+          install_address?: Json | null
+          order_number?: string
+          paid_amount_ngn?: number
+          payment_status?: Database["public"]["Enums"]["payment_status"]
+          phone?: string | null
+          shipping_address?: Json
+          shipping_ngn?: number
+          status?: Database["public"]["Enums"]["order_status"]
+          subtotal_ngn?: number
+          total_ngn?: number
+          tracking_number?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      payments: {
+        Row: {
+          amount_ngn: number
+          channel: string | null
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["payment_kind"]
+          order_id: string | null
+          payload: Json
+          provider: string
+          provider_reference: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_ngn: number
+          channel?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["payment_kind"]
+          order_id?: string | null
+          payload?: Json
+          provider?: string
+          provider_reference?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_ngn?: number
+          channel?: string | null
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["payment_kind"]
+          order_id?: string | null
+          payload?: Json
+          provider?: string
+          provider_reference?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_projects: {
         Row: {
           category: string
@@ -121,6 +402,116 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      product_categories: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          category_id: string | null
+          compare_at_price_ngn: number | null
+          created_at: string
+          deposit_percent: number
+          description: string | null
+          id: string
+          images: string[]
+          is_active: boolean
+          is_featured: boolean
+          is_subscription: boolean
+          low_stock_threshold: number
+          name: string
+          paystack_plan_code: string | null
+          price_ngn: number
+          short_description: string | null
+          sku: string | null
+          slug: string
+          specs: Json
+          stock: number
+          subscription_interval: string | null
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          compare_at_price_ngn?: number | null
+          created_at?: string
+          deposit_percent?: number
+          description?: string | null
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          is_featured?: boolean
+          is_subscription?: boolean
+          low_stock_threshold?: number
+          name: string
+          paystack_plan_code?: string | null
+          price_ngn: number
+          short_description?: string | null
+          sku?: string | null
+          slug: string
+          specs?: Json
+          stock?: number
+          subscription_interval?: string | null
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          compare_at_price_ngn?: number | null
+          created_at?: string
+          deposit_percent?: number
+          description?: string | null
+          id?: string
+          images?: string[]
+          is_active?: boolean
+          is_featured?: boolean
+          is_subscription?: boolean
+          low_stock_threshold?: number
+          name?: string
+          paystack_plan_code?: string | null
+          price_ngn?: number
+          short_description?: string | null
+          sku?: string | null
+          slug?: string
+          specs?: Json
+          stock?: number
+          subscription_interval?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "product_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -212,6 +603,75 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          amount_ngn: number
+          cancelled_at: string | null
+          created_at: string
+          id: string
+          interval: string
+          next_payment_date: string | null
+          order_id: string | null
+          paystack_customer_code: string | null
+          paystack_subscription_code: string | null
+          plan_code: string | null
+          product_id: string | null
+          started_at: string | null
+          status: Database["public"]["Enums"]["subscription_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_ngn: number
+          cancelled_at?: string | null
+          created_at?: string
+          id?: string
+          interval?: string
+          next_payment_date?: string | null
+          order_id?: string | null
+          paystack_customer_code?: string | null
+          paystack_subscription_code?: string | null
+          plan_code?: string | null
+          product_id?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_ngn?: number
+          cancelled_at?: string | null
+          created_at?: string
+          id?: string
+          interval?: string
+          next_payment_date?: string | null
+          order_id?: string | null
+          paystack_customer_code?: string | null
+          paystack_subscription_code?: string | null
+          plan_code?: string | null
+          product_id?: string | null
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "subscriptions_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -248,12 +708,35 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "staff" | "customer"
+      order_status:
+        | "pending"
+        | "confirmed"
+        | "processing"
+        | "installing"
+        | "shipped"
+        | "delivered"
+        | "completed"
+        | "cancelled"
+        | "refunded"
+      payment_kind: "full" | "deposit" | "balance" | "subscription"
+      payment_status:
+        | "unpaid"
+        | "deposit_paid"
+        | "fully_paid"
+        | "refunded"
+        | "failed"
       quote_status: "new" | "contacted" | "quoted" | "won" | "lost"
       service_type:
         | "web_design"
         | "digital_marketing"
         | "home_security"
         | "other"
+      subscription_status:
+        | "active"
+        | "past_due"
+        | "cancelled"
+        | "paused"
+        | "pending"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -382,12 +865,38 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "staff", "customer"],
+      order_status: [
+        "pending",
+        "confirmed",
+        "processing",
+        "installing",
+        "shipped",
+        "delivered",
+        "completed",
+        "cancelled",
+        "refunded",
+      ],
+      payment_kind: ["full", "deposit", "balance", "subscription"],
+      payment_status: [
+        "unpaid",
+        "deposit_paid",
+        "fully_paid",
+        "refunded",
+        "failed",
+      ],
       quote_status: ["new", "contacted", "quoted", "won", "lost"],
       service_type: [
         "web_design",
         "digital_marketing",
         "home_security",
         "other",
+      ],
+      subscription_status: [
+        "active",
+        "past_due",
+        "cancelled",
+        "paused",
+        "pending",
       ],
     },
   },
