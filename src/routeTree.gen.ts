@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesWebDesignRouteImport } from './routes/services.web-design'
+import { Route as ServicesDigitalMarketingRouteImport } from './routes/services.digital-marketing'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,30 +23,40 @@ const ServicesWebDesignRoute = ServicesWebDesignRouteImport.update({
   path: '/services/web-design',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesDigitalMarketingRoute =
+  ServicesDigitalMarketingRouteImport.update({
+    id: '/services/digital-marketing',
+    path: '/services/digital-marketing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/web-design': typeof ServicesWebDesignRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/web-design': typeof ServicesWebDesignRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/web-design': typeof ServicesWebDesignRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/services/web-design'
+  fullPaths: '/' | '/services/digital-marketing' | '/services/web-design'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/services/web-design'
-  id: '__root__' | '/' | '/services/web-design'
+  to: '/' | '/services/digital-marketing' | '/services/web-design'
+  id: '__root__' | '/' | '/services/digital-marketing' | '/services/web-design'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ServicesDigitalMarketingRoute: typeof ServicesDigitalMarketingRoute
   ServicesWebDesignRoute: typeof ServicesWebDesignRoute
 }
 
@@ -65,11 +76,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesWebDesignRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/digital-marketing': {
+      id: '/services/digital-marketing'
+      path: '/services/digital-marketing'
+      fullPath: '/services/digital-marketing'
+      preLoaderRoute: typeof ServicesDigitalMarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ServicesDigitalMarketingRoute: ServicesDigitalMarketingRoute,
   ServicesWebDesignRoute: ServicesWebDesignRoute,
 }
 export const routeTree = rootRouteImport
