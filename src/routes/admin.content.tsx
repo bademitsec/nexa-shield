@@ -37,9 +37,9 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
 
 interface BlogPost {
   id: string; title: string; slug: string; excerpt: string | null;
-  content: string | null; author: string | null; cover_image: string | null;
-  is_published: boolean; published_at: string | null; created_at: string;
-  tags: string[] | null;
+  content: string; author_name: string | null; cover_url: string | null;
+  published: boolean; published_at: string | null; created_at: string;
+  reading_minutes: number | null; tags: string[] | null;
 }
 
 function BlogPanel() {
@@ -71,7 +71,7 @@ function BlogPanel() {
             {rows.map((r) => (
               <tr key={r.id}>
                 <td className="px-4 py-3"><div className="font-medium">{r.title}</div><div className="text-xs text-muted-foreground">/{r.slug}</div></td>
-                <td className="px-4 py-3 text-xs">{r.is_published ? <span className="text-emerald-400">Published</span> : <span className="text-muted-foreground">Draft</span>}</td>
+                <td className="px-4 py-3 text-xs">{r.published ? <span className="text-emerald-400">Published</span> : <span className="text-muted-foreground">Draft</span>}</td>
                 <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(r.published_at ?? r.created_at)}</td>
                 <td className="px-4 py-3 text-right space-x-2">
                   <button onClick={() => setEditing(r)} className="text-xs text-primary hover:underline">Edit</button>
@@ -96,23 +96,26 @@ function BlogDialog({ post, onClose, onSaved }: { post: BlogPost | null; onClose
     slug: post?.slug ?? "",
     excerpt: post?.excerpt ?? "",
     content: post?.content ?? "",
-    author: post?.author ?? "Nexashield Team",
-    cover_image: post?.cover_image ?? "",
-    is_published: post?.is_published ?? false,
+    author_name: post?.author_name ?? "Nexashield Team",
+    cover_url: post?.cover_url ?? "",
+    published: post?.published ?? false,
+    reading_minutes: post?.reading_minutes ?? 5,
     tags: (post?.tags ?? []).join(", "),
   });
   const [saving, setSaving] = useState(false);
   const save = async () => {
+    if (!f.title.trim() || !f.content.trim()) { toast.error("Title and content required"); return; }
     setSaving(true);
     const payload = {
       title: f.title.trim(),
       slug: f.slug.trim() || f.title.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-"),
       excerpt: f.excerpt || null,
-      content: f.content || null,
-      author: f.author || null,
-      cover_image: f.cover_image || null,
-      is_published: f.is_published,
-      published_at: f.is_published ? (post?.published_at ?? new Date().toISOString()) : null,
+      content: f.content,
+      author_name: f.author_name || null,
+      cover_url: f.cover_url || null,
+      published: f.published,
+      published_at: f.published ? (post?.published_at ?? new Date().toISOString()) : null,
+      reading_minutes: Number(f.reading_minutes) || null,
       tags: f.tags.split(",").map((t) => t.trim()).filter(Boolean),
     };
     const q = post ? supabase.from("blog_posts").update(payload).eq("id", post.id) : supabase.from("blog_posts").insert(payload);
@@ -127,13 +130,14 @@ function BlogDialog({ post, onClose, onSaved }: { post: BlogPost | null; onClose
         <div className="grid gap-3 sm:grid-cols-2">
           <F label="Title"><Input value={f.title} onChange={(e) => setF({ ...f, title: e.target.value })} /></F>
           <F label="Slug"><Input value={f.slug} onChange={(e) => setF({ ...f, slug: e.target.value })} /></F>
-          <F label="Author"><Input value={f.author} onChange={(e) => setF({ ...f, author: e.target.value })} /></F>
-          <F label="Cover image URL"><Input value={f.cover_image} onChange={(e) => setF({ ...f, cover_image: e.target.value })} /></F>
+          <F label="Author"><Input value={f.author_name} onChange={(e) => setF({ ...f, author_name: e.target.value })} /></F>
+          <F label="Cover image URL"><Input value={f.cover_url} onChange={(e) => setF({ ...f, cover_url: e.target.value })} /></F>
+          <F label="Reading minutes"><Input type="number" value={f.reading_minutes} onChange={(e) => setF({ ...f, reading_minutes: Number(e.target.value) })} /></F>
         </div>
         <F label="Excerpt"><Textarea rows={2} value={f.excerpt} onChange={(e) => setF({ ...f, excerpt: e.target.value })} /></F>
         <F label="Content (markdown or plain text)"><Textarea rows={10} value={f.content} onChange={(e) => setF({ ...f, content: e.target.value })} /></F>
         <F label="Tags (comma separated)"><Input value={f.tags} onChange={(e) => setF({ ...f, tags: e.target.value })} /></F>
-        <label className="inline-flex items-center gap-2 text-sm"><input type="checkbox" checked={f.is_published} onChange={(e) => setF({ ...f, is_published: e.target.checked })} /> Published</label>
+        <label className="inline-flex items-center gap-2 text-sm"><input type="checkbox" checked={f.published} onChange={(e) => setF({ ...f, published: e.target.checked })} /> Published</label>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button disabled={saving} onClick={save}>{saving ? "Saving…" : "Save"}</Button>
@@ -144,10 +148,11 @@ function BlogDialog({ post, onClose, onSaved }: { post: BlogPost | null; onClose
 }
 
 interface Project {
-  id: string; title: string; slug: string; summary: string | null;
-  description: string | null; category: string | null; cover_image: string | null;
-  client_name: string | null; location: string | null; is_published: boolean;
-  created_at: string;
+  id: string; title: string; slug: string; summary: string;
+  content: string | null; category: string; cover_url: string | null;
+  client: string | null; published: boolean; featured: boolean;
+  sort_order: number; completed_at: string | null; created_at: string;
+  tags: string[] | null;
 }
 
 function PortfolioPanel() {
@@ -155,7 +160,7 @@ function PortfolioPanel() {
   const [editing, setEditing] = useState<Project | null>(null);
   const [creating, setCreating] = useState(false);
   const load = async () => {
-    const { data } = await supabase.from("portfolio_projects").select("*").order("created_at",{ascending:false});
+    const { data } = await supabase.from("portfolio_projects").select("*").order("sort_order",{ascending:true});
     setRows((data ?? []) as unknown as Project[]);
   };
   useEffect(() => { load(); }, []);
@@ -176,8 +181,8 @@ function PortfolioPanel() {
             {rows.map((r) => (
               <tr key={r.id}>
                 <td className="px-4 py-3"><div className="font-medium">{r.title}</div><div className="text-xs text-muted-foreground">/{r.slug}</div></td>
-                <td className="px-4 py-3 text-muted-foreground capitalize">{r.category ?? "—"}</td>
-                <td className="px-4 py-3 text-xs">{r.is_published ? <span className="text-emerald-400">Published</span> : <span className="text-muted-foreground">Draft</span>}</td>
+                <td className="px-4 py-3 text-muted-foreground capitalize">{r.category}</td>
+                <td className="px-4 py-3 text-xs">{r.published ? <span className="text-emerald-400">Published</span> : <span className="text-muted-foreground">Draft</span>}{r.featured && <span className="ml-2 text-primary">★ Featured</span>}</td>
                 <td className="px-4 py-3 text-right space-x-2">
                   <button onClick={() => setEditing(r)} className="text-xs text-primary hover:underline">Edit</button>
                   <button onClick={() => del(r.id)} className="text-xs text-destructive hover:underline">Delete</button>
@@ -200,26 +205,33 @@ function ProjectDialog({ p, onClose, onSaved }: { p: Project | null; onClose: ()
     title: p?.title ?? "",
     slug: p?.slug ?? "",
     summary: p?.summary ?? "",
-    description: p?.description ?? "",
+    content: p?.content ?? "",
     category: p?.category ?? "home-security",
-    cover_image: p?.cover_image ?? "",
-    client_name: p?.client_name ?? "",
-    location: p?.location ?? "",
-    is_published: p?.is_published ?? false,
+    cover_url: p?.cover_url ?? "",
+    client: p?.client ?? "",
+    published: p?.published ?? false,
+    featured: p?.featured ?? false,
+    sort_order: p?.sort_order ?? 0,
+    tags: (p?.tags ?? []).join(", "),
   });
   const [saving, setSaving] = useState(false);
   const save = async () => {
+    if (!f.title.trim() || !f.summary.trim() || !f.category.trim()) {
+      toast.error("Title, summary and category are required"); return;
+    }
     setSaving(true);
     const payload = {
       title: f.title.trim(),
       slug: f.slug.trim() || f.title.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-"),
-      summary: f.summary || null,
-      description: f.description || null,
-      category: f.category || null,
-      cover_image: f.cover_image || null,
-      client_name: f.client_name || null,
-      location: f.location || null,
-      is_published: f.is_published,
+      summary: f.summary,
+      content: f.content || null,
+      category: f.category,
+      cover_url: f.cover_url || null,
+      client: f.client || null,
+      published: f.published,
+      featured: f.featured,
+      sort_order: Number(f.sort_order) || 0,
+      tags: f.tags.split(",").map((t) => t.trim()).filter(Boolean),
     };
     const q = p ? supabase.from("portfolio_projects").update(payload).eq("id", p.id) : supabase.from("portfolio_projects").insert(payload);
     const { error } = await q;
@@ -240,13 +252,17 @@ function ProjectDialog({ p, onClose, onSaved }: { p: Project | null; onClose: ()
               <option value="digital-marketing">Digital Marketing</option>
             </select>
           </F>
-          <F label="Client"><Input value={f.client_name} onChange={(e) => setF({ ...f, client_name: e.target.value })} /></F>
-          <F label="Location"><Input value={f.location} onChange={(e) => setF({ ...f, location: e.target.value })} /></F>
-          <F label="Cover image URL"><Input value={f.cover_image} onChange={(e) => setF({ ...f, cover_image: e.target.value })} /></F>
+          <F label="Client"><Input value={f.client} onChange={(e) => setF({ ...f, client: e.target.value })} /></F>
+          <F label="Cover image URL"><Input value={f.cover_url} onChange={(e) => setF({ ...f, cover_url: e.target.value })} /></F>
+          <F label="Sort order"><Input type="number" value={f.sort_order} onChange={(e) => setF({ ...f, sort_order: Number(e.target.value) })} /></F>
         </div>
         <F label="Summary"><Textarea rows={2} value={f.summary} onChange={(e) => setF({ ...f, summary: e.target.value })} /></F>
-        <F label="Description"><Textarea rows={8} value={f.description} onChange={(e) => setF({ ...f, description: e.target.value })} /></F>
-        <label className="inline-flex items-center gap-2 text-sm"><input type="checkbox" checked={f.is_published} onChange={(e) => setF({ ...f, is_published: e.target.checked })} /> Published</label>
+        <F label="Content"><Textarea rows={8} value={f.content} onChange={(e) => setF({ ...f, content: e.target.value })} /></F>
+        <F label="Tags (comma separated)"><Input value={f.tags} onChange={(e) => setF({ ...f, tags: e.target.value })} /></F>
+        <div className="flex gap-4">
+          <label className="inline-flex items-center gap-2 text-sm"><input type="checkbox" checked={f.published} onChange={(e) => setF({ ...f, published: e.target.checked })} /> Published</label>
+          <label className="inline-flex items-center gap-2 text-sm"><input type="checkbox" checked={f.featured} onChange={(e) => setF({ ...f, featured: e.target.checked })} /> Featured</label>
+        </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button disabled={saving} onClick={save}>{saving ? "Saving…" : "Save"}</Button>
