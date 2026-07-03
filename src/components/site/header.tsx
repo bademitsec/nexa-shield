@@ -132,6 +132,21 @@ export function SiteHeader() {
       {open && (
         <div className="md:hidden border-t border-border/60 bg-background">
           <div className="container-x flex flex-col gap-1 py-3">
+            <div className="px-3 pt-2 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+              Services
+            </div>
+            {services.map((s) => (
+              <Link
+                key={s.to}
+                to={s.to}
+                onClick={() => setOpen(false)}
+                className="rounded-md px-3 py-2.5 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+                activeProps={{ className: "text-foreground bg-secondary" }}
+              >
+                {s.label}
+              </Link>
+            ))}
+            <div className="mt-2 border-t border-border/60 pt-2" />
             {nav.map((n) => (
               <Link
                 key={n.to}
