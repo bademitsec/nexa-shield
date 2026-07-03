@@ -46,6 +46,28 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
+          <div className="relative group">
+            <button
+              className="inline-flex items-center gap-1 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              aria-haspopup="menu"
+            >
+              Services <ChevronDown className="h-3.5 w-3.5" />
+            </button>
+            <div className="invisible absolute left-0 top-full pt-2 opacity-0 transition-all group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+              <div className="min-w-52 rounded-md border border-border/60 bg-popover p-1 shadow-lg">
+                {services.map((s) => (
+                  <Link
+                    key={s.to}
+                    to={s.to}
+                    className="block rounded-sm px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    activeProps={{ className: "text-foreground bg-secondary" }}
+                  >
+                    {s.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
           {nav.map((n) => (
             <Link
               key={n.to}
@@ -57,6 +79,7 @@ export function SiteHeader() {
             </Link>
           ))}
         </nav>
+
 
         <div className="hidden md:flex items-center gap-2">
           <CurrencyToggle />
