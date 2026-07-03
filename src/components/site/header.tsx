@@ -1,16 +1,19 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, Shield, ShoppingCart } from "lucide-react";
+import { Menu, X, Shield, ShoppingCart, ChevronDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { site } from "@/lib/site-config";
 import { Button } from "@/components/ui/button";
 import { CurrencyToggle } from "@/components/site/currency-toggle";
 import { useCart } from "@/lib/store";
 
-const nav = [
+const services = [
   { to: "/services/web-design", label: "Web Design" },
-  { to: "/services/digital-marketing", label: "Marketing" },
+  { to: "/services/digital-marketing", label: "Digital Marketing" },
   { to: "/services/home-security", label: "Home Security" },
+] as const;
+
+const nav = [
   { to: "/shop", label: "Shop" },
   { to: "/portfolio", label: "Portfolio" },
   { to: "/blog", label: "Blog" },
