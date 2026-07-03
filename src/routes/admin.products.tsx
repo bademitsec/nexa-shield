@@ -151,7 +151,7 @@ function ProductDialog({ categories, product, onClose, onSaved }: {
       is_subscription: form.is_subscription,
       subscription_interval: form.is_subscription ? form.subscription_interval : null,
       images: form.image_url.trim() ? [form.image_url.trim()] : [],
-      specs,
+      specs: specs as never,
     };
     const q = isEdit
       ? supabase.from("products").update(payload).eq("id", product!.id)

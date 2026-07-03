@@ -62,7 +62,8 @@ function AdminOrderDetail() {
   const save = async () => {
     setSaving(true);
     const { error } = await supabase.from("orders").update({
-      status, payment_status: payment,
+      status: status as never,
+      payment_status: payment as never,
       tracking_number: tracking || null,
       admin_notes: notes || null,
     }).eq("id", order.id);
