@@ -11,16 +11,22 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CartRouteImport } from './routes/cart'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 import { Route as ServicesWebDesignRouteImport } from './routes/services.web-design'
 import { Route as ServicesHomeSecurityRouteImport } from './routes/services.home-security'
 import { Route as ServicesDigitalMarketingRouteImport } from './routes/services.digital-marketing'
 import { Route as PortfolioSlugRouteImport } from './routes/portfolio.$slug'
+import { Route as OrdersIdRouteImport } from './routes/orders.$id'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api.public.paystack.webhook'
 
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
@@ -32,9 +38,24 @@ const PortfolioRoute = PortfolioRouteImport.update({
   path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OrdersRoute = OrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BlogRoute = BlogRouteImport.update({
@@ -57,6 +78,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ShopSlugRoute = ShopSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ShopRoute,
+} as any)
 const ServicesWebDesignRoute = ServicesWebDesignRouteImport.update({
   id: '/services/web-design',
   path: '/services/web-design',
@@ -78,39 +104,62 @@ const PortfolioSlugRoute = PortfolioSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => PortfolioRoute,
 } as any)
+const OrdersIdRoute = OrdersIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => OrdersRoute,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const ApiPublicPaystackWebhookRoute =
+  ApiPublicPaystackWebhookRouteImport.update({
+    id: '/api/public/paystack/webhook',
+    path: '/api/public/paystack/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
-  '/shop': typeof ShopRoute
+  '/shop': typeof ShopRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/home-security': typeof ServicesHomeSecurityRoute
   '/services/web-design': typeof ServicesWebDesignRoute
+  '/shop/$slug': typeof ShopSlugRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
-  '/shop': typeof ShopRoute
+  '/shop': typeof ShopRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/home-security': typeof ServicesHomeSecurityRoute
   '/services/web-design': typeof ServicesWebDesignRoute
+  '/shop/$slug': typeof ShopSlugRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -118,14 +167,20 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
+  '/cart': typeof CartRoute
+  '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
+  '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
-  '/shop': typeof ShopRoute
+  '/shop': typeof ShopRouteWithChildren
   '/blog/$slug': typeof BlogSlugRoute
+  '/orders/$id': typeof OrdersIdRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/home-security': typeof ServicesHomeSecurityRoute
   '/services/web-design': typeof ServicesWebDesignRoute
+  '/shop/$slug': typeof ShopSlugRoute
+  '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -134,42 +189,60 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/blog'
+    | '/cart'
+    | '/checkout'
     | '/contact'
+    | '/orders'
     | '/portfolio'
     | '/shop'
     | '/blog/$slug'
+    | '/orders/$id'
     | '/portfolio/$slug'
     | '/services/digital-marketing'
     | '/services/home-security'
     | '/services/web-design'
+    | '/shop/$slug'
+    | '/api/public/paystack/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/account'
     | '/auth'
     | '/blog'
+    | '/cart'
+    | '/checkout'
     | '/contact'
+    | '/orders'
     | '/portfolio'
     | '/shop'
     | '/blog/$slug'
+    | '/orders/$id'
     | '/portfolio/$slug'
     | '/services/digital-marketing'
     | '/services/home-security'
     | '/services/web-design'
+    | '/shop/$slug'
+    | '/api/public/paystack/webhook'
   id:
     | '__root__'
     | '/'
     | '/account'
     | '/auth'
     | '/blog'
+    | '/cart'
+    | '/checkout'
     | '/contact'
+    | '/orders'
     | '/portfolio'
     | '/shop'
     | '/blog/$slug'
+    | '/orders/$id'
     | '/portfolio/$slug'
     | '/services/digital-marketing'
     | '/services/home-security'
     | '/services/web-design'
+    | '/shop/$slug'
+    | '/api/public/paystack/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -177,12 +250,16 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRouteWithChildren
+  CartRoute: typeof CartRoute
+  CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
+  OrdersRoute: typeof OrdersRouteWithChildren
   PortfolioRoute: typeof PortfolioRouteWithChildren
-  ShopRoute: typeof ShopRoute
+  ShopRoute: typeof ShopRouteWithChildren
   ServicesDigitalMarketingRoute: typeof ServicesDigitalMarketingRoute
   ServicesHomeSecurityRoute: typeof ServicesHomeSecurityRoute
   ServicesWebDesignRoute: typeof ServicesWebDesignRoute
+  ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -201,11 +278,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/orders': {
+      id: '/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof OrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/blog': {
@@ -236,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/shop/$slug': {
+      id: '/shop/$slug'
+      path: '/$slug'
+      fullPath: '/shop/$slug'
+      preLoaderRoute: typeof ShopSlugRouteImport
+      parentRoute: typeof ShopRoute
+    }
     '/services/web-design': {
       id: '/services/web-design'
       path: '/services/web-design'
@@ -264,12 +369,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortfolioSlugRouteImport
       parentRoute: typeof PortfolioRoute
     }
+    '/orders/$id': {
+      id: '/orders/$id'
+      path: '/$id'
+      fullPath: '/orders/$id'
+      preLoaderRoute: typeof OrdersIdRouteImport
+      parentRoute: typeof OrdersRoute
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
       fullPath: '/blog/$slug'
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
+    }
+    '/api/public/paystack/webhook': {
+      id: '/api/public/paystack/webhook'
+      path: '/api/public/paystack/webhook'
+      fullPath: '/api/public/paystack/webhook'
+      preLoaderRoute: typeof ApiPublicPaystackWebhookRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -284,6 +403,17 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
+interface OrdersRouteChildren {
+  OrdersIdRoute: typeof OrdersIdRoute
+}
+
+const OrdersRouteChildren: OrdersRouteChildren = {
+  OrdersIdRoute: OrdersIdRoute,
+}
+
+const OrdersRouteWithChildren =
+  OrdersRoute._addFileChildren(OrdersRouteChildren)
+
 interface PortfolioRouteChildren {
   PortfolioSlugRoute: typeof PortfolioSlugRoute
 }
@@ -296,17 +426,31 @@ const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
   PortfolioRouteChildren,
 )
 
+interface ShopRouteChildren {
+  ShopSlugRoute: typeof ShopSlugRoute
+}
+
+const ShopRouteChildren: ShopRouteChildren = {
+  ShopSlugRoute: ShopSlugRoute,
+}
+
+const ShopRouteWithChildren = ShopRoute._addFileChildren(ShopRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
   BlogRoute: BlogRouteWithChildren,
+  CartRoute: CartRoute,
+  CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
+  OrdersRoute: OrdersRouteWithChildren,
   PortfolioRoute: PortfolioRouteWithChildren,
-  ShopRoute: ShopRoute,
+  ShopRoute: ShopRouteWithChildren,
   ServicesDigitalMarketingRoute: ServicesDigitalMarketingRoute,
   ServicesHomeSecurityRoute: ServicesHomeSecurityRoute,
   ServicesWebDesignRoute: ServicesWebDesignRoute,
+  ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
