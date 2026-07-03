@@ -28,7 +28,7 @@ function AdminSubs() {
 
   const change = async (id: string, status: string) => {
     const { error } = await supabase.from("subscriptions").update({
-      status, cancelled_at: status === "cancelled" ? new Date().toISOString() : null,
+      status: status as never, cancelled_at: status === "cancelled" ? new Date().toISOString() : null,
     }).eq("id", id);
     if (error) toast.error(error.message); else { toast.success("Updated"); load(); }
   };

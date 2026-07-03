@@ -59,7 +59,7 @@ function AdminProducts() {
       <div className="rounded-xl border border-border/60 bg-card/40 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="border-b border-border/60 text-xs uppercase text-muted-foreground">
-            <tr><Th>Name</Th><Th>Category</Th><Th>Price</Th><Th>Stock</Th><Th>Status</Th><Th></Th></tr>
+            <tr>{["Name","Category","Price","Stock","Status",""].map((h,i) => <th key={i} className="text-left px-4 py-2.5">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-border/60">
             {products.map((p) => {
