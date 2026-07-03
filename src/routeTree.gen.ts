@@ -9,38 +9,162 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ShopRouteImport } from './routes/shop'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ServicesWebDesignRouteImport } from './routes/services.web-design'
+import { Route as ServicesHomeSecurityRouteImport } from './routes/services.home-security'
+import { Route as ServicesDigitalMarketingRouteImport } from './routes/services.digital-marketing'
 
+const ShopRoute = ShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ServicesWebDesignRoute = ServicesWebDesignRouteImport.update({
+  id: '/services/web-design',
+  path: '/services/web-design',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesHomeSecurityRoute = ServicesHomeSecurityRouteImport.update({
+  id: '/services/home-security',
+  path: '/services/home-security',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesDigitalMarketingRoute =
+  ServicesDigitalMarketingRouteImport.update({
+    id: '/services/digital-marketing',
+    path: '/services/digital-marketing',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/shop': typeof ShopRoute
+  '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
+  '/services/home-security': typeof ServicesHomeSecurityRoute
+  '/services/web-design': typeof ServicesWebDesignRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/shop': typeof ShopRoute
+  '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
+  '/services/home-security': typeof ServicesHomeSecurityRoute
+  '/services/web-design': typeof ServicesWebDesignRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
+  '/auth': typeof AuthRoute
+  '/contact': typeof ContactRoute
+  '/shop': typeof ShopRoute
+  '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
+  '/services/home-security': typeof ServicesHomeSecurityRoute
+  '/services/web-design': typeof ServicesWebDesignRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/account'
+    | '/auth'
+    | '/contact'
+    | '/shop'
+    | '/services/digital-marketing'
+    | '/services/home-security'
+    | '/services/web-design'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/account'
+    | '/auth'
+    | '/contact'
+    | '/shop'
+    | '/services/digital-marketing'
+    | '/services/home-security'
+    | '/services/web-design'
+  id:
+    | '__root__'
+    | '/'
+    | '/account'
+    | '/auth'
+    | '/contact'
+    | '/shop'
+    | '/services/digital-marketing'
+    | '/services/home-security'
+    | '/services/web-design'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
+  AuthRoute: typeof AuthRoute
+  ContactRoute: typeof ContactRoute
+  ShopRoute: typeof ShopRoute
+  ServicesDigitalMarketingRoute: typeof ServicesDigitalMarketingRoute
+  ServicesHomeSecurityRoute: typeof ServicesHomeSecurityRoute
+  ServicesWebDesignRoute: typeof ServicesWebDesignRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/shop': {
+      id: '/shop'
+      path: '/shop'
+      fullPath: '/shop'
+      preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +172,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/services/web-design': {
+      id: '/services/web-design'
+      path: '/services/web-design'
+      fullPath: '/services/web-design'
+      preLoaderRoute: typeof ServicesWebDesignRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/home-security': {
+      id: '/services/home-security'
+      path: '/services/home-security'
+      fullPath: '/services/home-security'
+      preLoaderRoute: typeof ServicesHomeSecurityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services/digital-marketing': {
+      id: '/services/digital-marketing'
+      path: '/services/digital-marketing'
+      fullPath: '/services/digital-marketing'
+      preLoaderRoute: typeof ServicesDigitalMarketingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
+  AuthRoute: AuthRoute,
+  ContactRoute: ContactRoute,
+  ShopRoute: ShopRoute,
+  ServicesDigitalMarketingRoute: ServicesDigitalMarketingRoute,
+  ServicesHomeSecurityRoute: ServicesHomeSecurityRoute,
+  ServicesWebDesignRoute: ServicesWebDesignRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
