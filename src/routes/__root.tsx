@@ -17,6 +17,7 @@ import { WhatsAppButton } from "@/components/site/whatsapp-button";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { site } from "@/lib/site-config";
+import { CartProvider, CurrencyProvider } from "@/lib/store";
 
 function NotFoundComponent() {
   return (
@@ -144,15 +145,19 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col">
-        <SiteHeader />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        <SiteFooter />
-        <WhatsAppButton />
-        <Toaster richColors position="top-right" />
-      </div>
+      <CurrencyProvider>
+        <CartProvider>
+          <div className="flex min-h-screen flex-col">
+            <SiteHeader />
+            <main className="flex-1">
+              <Outlet />
+            </main>
+            <SiteFooter />
+            <WhatsAppButton />
+            <Toaster richColors position="top-right" />
+          </div>
+        </CartProvider>
+      </CurrencyProvider>
     </QueryClientProvider>
   );
 }

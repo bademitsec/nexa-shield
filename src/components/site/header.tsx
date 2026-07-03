@@ -1,9 +1,11 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Menu, X, Shield } from "lucide-react";
+import { Menu, X, Shield, ShoppingCart } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { site } from "@/lib/site-config";
 import { Button } from "@/components/ui/button";
+import { CurrencyToggle } from "@/components/site/currency-toggle";
+import { useCart } from "@/lib/store";
 
 const nav = [
   { to: "/services/web-design", label: "Web Design" },
@@ -18,6 +20,7 @@ const nav = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const [signedIn, setSignedIn] = useState(false);
+  const { count } = useCart();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => setSignedIn(!!data.session));
@@ -53,6 +56,19 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
+          <CurrencyToggle />
+          <Link
+            to="/cart"
+            className="relative inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground"
+            aria-label="Cart"
+          >
+            <ShoppingCart className="h-4 w-4" />
+            {count > 0 && (
+              <span className="absolute -top-1 -right-1 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-foreground">
+                {count}
+              </span>
+            )}
+          </Link>
           <Link
             to={signedIn ? "/account" : "/auth"}
             className="text-sm text-muted-foreground hover:text-foreground"
@@ -64,13 +80,27 @@ export function SiteHeader() {
           </Button>
         </div>
 
-        <button
-          className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-secondary"
-          onClick={() => setOpen((o) => !o)}
-          aria-label="Toggle menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+        <div className="md:hidden flex items-center gap-1">
+          <Link
+            to="/cart"
+            className="relative inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-secondary"
+            aria-label="Cart"
+          >
+            <ShoppingCart className="h-5 w-5" />
+            {count > 0 && (
+              <span className="absolute top-1 right-1 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-foreground">
+                {count}
+              </span>
+            )}
+          </Link>
+          <button
+            className="inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-secondary"
+            onClick={() => setOpen((o) => !o)}
+            aria-label="Toggle menu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
 
       {open && (
@@ -87,18 +117,21 @@ export function SiteHeader() {
                 {n.label}
               </Link>
             ))}
-            <div className="mt-2 flex gap-2">
-              <Button asChild variant="outline" className="flex-1">
-                <Link to={signedIn ? "/account" : "/auth"} onClick={() => setOpen(false)}>
-                  {signedIn ? "Account" : "Sign in"}
-                </Link>
-              </Button>
-              <Button asChild className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90">
-                <Link to="/contact" onClick={() => setOpen(false)}>
-                  Get a quote
-                </Link>
-              </Button>
+            <div className="mt-2 flex items-center justify-between">
+              <CurrencyToggle />
+              <Link
+                to={signedIn ? "/account" : "/auth"}
+                className="text-sm text-muted-foreground"
+                onClick={() => setOpen(false)}
+              >
+                {signedIn ? "Account" : "Sign in"}
+              </Link>
             </div>
+            <Button asChild className="mt-2 bg-accent text-accent-foreground hover:bg-accent/90">
+              <Link to="/contact" onClick={() => setOpen(false)}>
+                Get a quote
+              </Link>
+            </Button>
           </div>
         </div>
       )}
