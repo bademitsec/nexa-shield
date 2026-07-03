@@ -165,7 +165,7 @@ export const verifyPayment = createServerFn({ method: "POST" })
       status: success ? "success" : d.status || "failed",
       channel: d.channel ?? null,
       amount_ngn: paidNaira,
-      payload: res as unknown as Record<string, unknown>,
+      payload: JSON.parse(JSON.stringify(res)),
     }).eq("provider_reference", data.reference);
 
     if (!success || !orderId) return { success: false };
