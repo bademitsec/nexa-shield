@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Price } from "@/components/site/price";
+import { Button } from "@/components/ui/button";
+import { useCart } from "@/lib/store";
 import { site } from "@/lib/site-config";
-import { Shield, Package } from "lucide-react";
+import { Shield, Package, ShoppingCart } from "lucide-react";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -20,6 +23,27 @@ export const Route = createFileRoute("/shop")({
 
 function ShopPage() {
   const [cat, setCat] = useState<string>("all");
+  const cart = useCart();
+
+  const handleAdd = (e: React.MouseEvent, p: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!p.is_subscription && p.stock <= 0) return;
+    cart.add({
+      productId: p.id,
+      slug: p.slug,
+      name: p.name,
+      priceNgn: Number(p.price_ngn),
+      depositPercent: p.deposit_percent,
+      image: p.images?.[0],
+      quantity: 1,
+      isSubscription: p.is_subscription,
+      subscriptionInterval: p.subscription_interval,
+      maxStock: p.is_subscription ? 1 : Math.max(0, p.stock),
+    });
+    toast.success(`${p.name} added to cart`);
+  };
+
 
   const { data: categories = [] } = useQuery({
     queryKey: ["shop", "categories"],
@@ -122,6 +146,15 @@ function ShopPage() {
                 {!p.is_subscription && p.stock <= 0 && (
                   <p className="mt-1 text-[11px] text-destructive">Out of stock</p>
                 )}
+                <Button
+                  size="sm"
+                  className="mt-3 w-full"
+                  disabled={!p.is_subscription && p.stock <= 0}
+                  onClick={(e) => handleAdd(e, p)}
+                >
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  {p.is_subscription ? "Subscribe" : p.stock <= 0 ? "Out of stock" : "Add to cart"}
+                </Button>
               </div>
             </Link>
           ))}
