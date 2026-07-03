@@ -10,22 +10,36 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ServicesWebDesignRouteImport } from './routes/services.web-design'
 import { Route as ServicesHomeSecurityRouteImport } from './routes/services.home-security'
 import { Route as ServicesDigitalMarketingRouteImport } from './routes/services.digital-marketing'
+import { Route as PortfolioSlugRouteImport } from './routes/portfolio.$slug'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioRoute = PortfolioRouteImport.update({
+  id: '/portfolio',
+  path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -59,13 +73,27 @@ const ServicesDigitalMarketingRoute =
     path: '/services/digital-marketing',
     getParentRoute: () => rootRouteImport,
   } as any)
+const PortfolioSlugRoute = PortfolioSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => PortfolioRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/home-security': typeof ServicesHomeSecurityRoute
   '/services/web-design': typeof ServicesWebDesignRoute
@@ -74,8 +102,12 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/home-security': typeof ServicesHomeSecurityRoute
   '/services/web-design': typeof ServicesWebDesignRoute
@@ -85,8 +117,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
+  '/blog': typeof BlogRouteWithChildren
   '/contact': typeof ContactRoute
+  '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
   '/services/home-security': typeof ServicesHomeSecurityRoute
   '/services/web-design': typeof ServicesWebDesignRoute
@@ -97,8 +133,12 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/auth'
+    | '/blog'
     | '/contact'
+    | '/portfolio'
     | '/shop'
+    | '/blog/$slug'
+    | '/portfolio/$slug'
     | '/services/digital-marketing'
     | '/services/home-security'
     | '/services/web-design'
@@ -107,8 +147,12 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/auth'
+    | '/blog'
     | '/contact'
+    | '/portfolio'
     | '/shop'
+    | '/blog/$slug'
+    | '/portfolio/$slug'
     | '/services/digital-marketing'
     | '/services/home-security'
     | '/services/web-design'
@@ -117,8 +161,12 @@ export interface FileRouteTypes {
     | '/'
     | '/account'
     | '/auth'
+    | '/blog'
     | '/contact'
+    | '/portfolio'
     | '/shop'
+    | '/blog/$slug'
+    | '/portfolio/$slug'
     | '/services/digital-marketing'
     | '/services/home-security'
     | '/services/web-design'
@@ -128,7 +176,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
+  BlogRoute: typeof BlogRouteWithChildren
   ContactRoute: typeof ContactRoute
+  PortfolioRoute: typeof PortfolioRouteWithChildren
   ShopRoute: typeof ShopRoute
   ServicesDigitalMarketingRoute: typeof ServicesDigitalMarketingRoute
   ServicesHomeSecurityRoute: typeof ServicesHomeSecurityRoute
@@ -144,11 +194,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ShopRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio': {
+      id: '/portfolio'
+      path: '/portfolio'
+      fullPath: '/portfolio'
+      preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contact': {
       id: '/contact'
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -193,14 +257,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ServicesDigitalMarketingRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/$slug': {
+      id: '/portfolio/$slug'
+      path: '/$slug'
+      fullPath: '/portfolio/$slug'
+      preLoaderRoute: typeof PortfolioSlugRouteImport
+      parentRoute: typeof PortfolioRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
+    }
   }
 }
+
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
+interface PortfolioRouteChildren {
+  PortfolioSlugRoute: typeof PortfolioSlugRoute
+}
+
+const PortfolioRouteChildren: PortfolioRouteChildren = {
+  PortfolioSlugRoute: PortfolioSlugRoute,
+}
+
+const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
+  PortfolioRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
+  BlogRoute: BlogRouteWithChildren,
   ContactRoute: ContactRoute,
+  PortfolioRoute: PortfolioRouteWithChildren,
   ShopRoute: ShopRoute,
   ServicesDigitalMarketingRoute: ServicesDigitalMarketingRoute,
   ServicesHomeSecurityRoute: ServicesHomeSecurityRoute,
