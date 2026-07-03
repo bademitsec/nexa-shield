@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate, useSearch } from "@tanstack/react-router";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Loader2, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,22 @@ function AuthPage() {
   const nav = useNavigate();
   const { redirect } = useSearch({ from: "/auth" });
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (active && data.session) nav({ to: (redirect as string) || "/account" });
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        nav({ to: (redirect as string) || "/account" });
+      }
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, [nav, redirect]);
 
   const signIn = async (email: string, password: string) => {
     setLoading(true);
@@ -67,7 +83,13 @@ function AuthPage() {
     const result = await lovable.auth.signInWithOAuth("google", {
       redirect_uri: window.location.origin,
     });
-    if (result.error) toast.error(result.error.message ?? "Sign-in failed");
+    if (result.error) {
+      toast.error(result.error.message ?? "Sign-in failed");
+      return;
+    }
+    if (result.redirected) return;
+    // Popup flow: session set — navigate.
+    nav({ to: (redirect as string) || "/account" });
   };
 
   return (
