@@ -84,9 +84,12 @@ function ContactPage() {
     setSubmitting(true);
     try {
       const attachmentPaths: string[] = [];
+      const { data: sessionData } = await supabase.auth.getSession();
+      const uid = sessionData.session?.user.id;
+      const prefix = uid ?? "anon";
       for (const f of files) {
         const safe = f.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const path = `${crypto.randomUUID()}-${safe}`;
+        const path = `${prefix}/${crypto.randomUUID()}-${safe}`;
         const { error: upErr } = await supabase.storage
           .from("quote-attachments")
           .upload(path, f, { contentType: f.type || undefined, upsert: false });
