@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { AdminSidebar } from "@/components/admin/sidebar";
 import { getMyRoles } from "@/lib/roles.functions";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Nexashield" }, { name: "robots", content: "noindex" }] }),
