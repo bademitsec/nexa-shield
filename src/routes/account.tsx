@@ -64,7 +64,12 @@ function AccountPage() {
           </Link>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap items-center gap-2">
+          {isStaff && (
+            <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+              <Link to="/admin"><Shield className="mr-2 h-4 w-4" /> Admin dashboard</Link>
+            </Button>
+          )}
           <Button variant="outline" onClick={signOut}>
             <LogOut className="mr-2 h-4 w-4" /> Sign out
           </Button>
