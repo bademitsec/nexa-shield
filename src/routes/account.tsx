@@ -1,9 +1,11 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { getMyRoles } from "@/lib/roles.functions";
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -23,11 +25,14 @@ export const Route = createFileRoute("/account")({
 
 function AccountPage() {
   const nav = useNavigate();
+  const rolesFn = useServerFn(getMyRoles);
   const [email, setEmail] = useState<string>("");
+  const [isStaff, setIsStaff] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email || ""));
-  }, []);
+    rolesFn().then((r) => setIsStaff(r.isStaff)).catch(() => {});
+  }, [rolesFn]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
@@ -59,7 +64,12 @@ function AccountPage() {
           </Link>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap items-center gap-2">
+          {isStaff && (
+            <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+              <Link to="/admin"><Shield className="mr-2 h-4 w-4" /> Admin dashboard</Link>
+            </Button>
+          )}
           <Button variant="outline" onClick={signOut}>
             <LogOut className="mr-2 h-4 w-4" /> Sign out
           </Button>
