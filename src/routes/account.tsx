@@ -25,11 +25,14 @@ export const Route = createFileRoute("/account")({
 
 function AccountPage() {
   const nav = useNavigate();
+  const rolesFn = useServerFn(getMyRoles);
   const [email, setEmail] = useState<string>("");
+  const [isStaff, setIsStaff] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setEmail(data.user?.email || ""));
-  }, []);
+    rolesFn().then((r) => setIsStaff(r.isStaff)).catch(() => {});
+  }, [rolesFn]);
 
   const signOut = async () => {
     await supabase.auth.signOut();
