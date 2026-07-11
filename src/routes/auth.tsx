@@ -79,18 +79,17 @@ function AuthPage() {
   };
 
   const signInWithGoogle = async () => {
-    const { lovable } = await import("@/integrations/lovable/index");
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      toast.error(result.error.message ?? "Sign-in failed");
-      return;
-    }
-    if (result.redirected) return;
-    // Popup flow: session set — navigate.
-    nav({ to: (redirect as string) || "/account" });
-  };
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: `${window.location.origin}${redirect ? `?redirect=${encodeURIComponent(redirect as string)}` : "/account"}`,
+    },
+  });
+  if (error) {
+    toast.error(error.message ?? "Sign-in failed");
+  }
+  // Supabase handles the redirect itself; no need to manually nav() here.
+};
 
   return (
     <section className="container-x flex min-h-[calc(100vh-8rem)] items-center justify-center py-14">
