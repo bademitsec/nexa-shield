@@ -5,13 +5,13 @@ import { ServiceLayout } from "./services.web-design";
 export const Route = createFileRoute("/services/digital-marketing")({
   head: () => ({
     meta: [
-      { title: "Digital Marketing Agency in Nigeria — Nexashield" },
+      { title: "Digital Marketing Agency in Nigeria — Webfortix" },
       {
         name: "description",
         content:
           "SEO, Google & Meta ads, social media and content marketing that drives leads for Nigerian businesses. Transparent monthly retainers.",
       },
-      { property: "og:title", content: "Digital Marketing — Nexashield" },
+      { property: "og:title", content: "Digital Marketing — Webfortix" },
       {
         property: "og:description",
         content: "SEO, ads, social & content for growing Nigerian brands.",

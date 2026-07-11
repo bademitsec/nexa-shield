@@ -15,8 +15,8 @@ export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Sign in — Nexashield" },
-      { name: "description", content: "Sign in to your Nexashield account to track orders, quotes, and subscriptions." },
+      { title: "Sign in — Webfortix" },
+      { name: "description", content: "Sign in to your Webfortix account to track orders, quotes, and subscriptions." },
       { name: "robots", content: "noindex" },
     ],
   }),
@@ -100,7 +100,7 @@ function AuthPage() {
             <span className="grid h-10 w-10 place-items-center rounded-md bg-primary/15 text-primary ring-1 ring-primary/30">
               <Shield className="h-5 w-5" />
             </span>
-            <span className="font-display text-xl font-bold">Nexashield</span>
+            <span className="font-display text-xl font-bold">Webfortix</span>
           </Link>
         </div>
 

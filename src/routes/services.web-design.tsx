@@ -6,13 +6,13 @@ import { site } from "@/lib/site-config";
 export const Route = createFileRoute("/services/web-design")({
   head: () => ({
     meta: [
-      { title: "Web Design & Development in Nigeria — Nexashield" },
+      { title: "Web Design & Development in Nigeria — Webfortix" },
       {
         name: "description",
         content:
           "Custom websites, e-commerce and web apps built for speed, mobile, and Google. Nigerian-owned agency, fixed-scope quotes.",
       },
-      { property: "og:title", content: "Web Design & Development — Nexashield" },
+      { property: "og:title", content: "Web Design & Development — Webfortix" },
       {
         property: "og:description",
         content: "Fast, SEO-ready websites built for Nigerian businesses.",

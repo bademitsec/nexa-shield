@@ -6,7 +6,7 @@ import { getMyRoles } from "@/lib/roles.functions";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({ meta: [{ title: "Admin — Nexashield" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "Admin — Webfortix" }, { name: "robots", content: "noindex" }] }),
   component: AdminLayout,
 });
 
