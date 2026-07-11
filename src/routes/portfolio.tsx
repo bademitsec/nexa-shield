@@ -35,14 +35,14 @@ const listOpts = queryOptions({
 export const Route = createFileRoute("/portfolio")({
   head: () => ({
     meta: [
-      { title: "Portfolio & Case Studies — Nexashield" },
+      { title: "Portfolio & Case Studies — Webfortix" },
       {
         name: "description",
         content:
-          "Selected work from Nexashield: home security installs, marketing campaigns and websites for Nigerian brands.",
+          "Selected work from Webfortix: home security installs, marketing campaigns and websites for Nigerian brands.",
       },
-      { property: "og:title", content: "Portfolio — Nexashield" },
-      { property: "og:description", content: "Case studies from Nexashield across security, marketing & web." },
+      { property: "og:title", content: "Portfolio — Webfortix" },
+      { property: "og:description", content: "Case studies from Webfortix across security, marketing & web." },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(listOpts),

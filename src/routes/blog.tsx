@@ -32,13 +32,13 @@ const listOpts = queryOptions({
 export const Route = createFileRoute("/blog")({
   head: () => ({
     meta: [
-      { title: "Blog — Nexashield" },
+      { title: "Blog — Webfortix" },
       {
         name: "description",
         content:
           "Guides on home security, digital marketing and web performance for Nigerian businesses and homeowners.",
       },
-      { property: "og:title", content: "Nexashield Blog" },
+      { property: "og:title", content: "Webfortix Blog" },
       { property: "og:description", content: "Guides on security, marketing & web for Nigerian businesses." },
     ],
   }),

@@ -1,11 +1,11 @@
 export const site = {
-  name: "Nexashield",
+  name: "Webfortix",
   tagline: "Web. Marketing. Security.",
   description:
-    "Nexashield builds fast websites, growth-driven digital marketing, and installs smart home security systems across Nigeria.",
-  url: "https://nexashield.ng",
+    "Webfortix builds fast websites, growth-driven digital marketing, and installs smart home security systems across Nigeria.",
+  url: "https://webfortix.ng",
   whatsapp: "2348000000000", // digits only, E.164 without +
-  email: "hello@nexashield.ng",
+  email: "hello@webfortix.ng",
   phone: "+234 800 000 0000",
   address: "Lagos, Nigeria",
 };

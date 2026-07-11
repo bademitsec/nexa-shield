@@ -96,7 +96,7 @@ function BlogDialog({ post, onClose, onSaved }: { post: BlogPost | null; onClose
     slug: post?.slug ?? "",
     excerpt: post?.excerpt ?? "",
     content: post?.content ?? "",
-    author_name: post?.author_name ?? "Nexashield Team",
+    author_name: post?.author_name ?? "Webfortix Team",
     cover_url: post?.cover_url ?? "",
     published: post?.published ?? false,
     reading_minutes: post?.reading_minutes ?? 5,
