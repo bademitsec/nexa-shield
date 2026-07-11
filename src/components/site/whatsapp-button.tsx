@@ -3,7 +3,7 @@ import { site } from "@/lib/site-config";
 
 export function WhatsAppButton() {
   const href = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(
-    "Hi Nexashield, I'd like to know more about your services.",
+    "Hi Webfortix, I'd like to know more about your services.",
   )}`;
   return (
     <a

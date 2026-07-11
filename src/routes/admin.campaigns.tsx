@@ -83,7 +83,7 @@ function CampaignDialog({ c, onClose, onSaved }: { c: Campaign | null; onClose: 
     name: c?.name ?? "",
     subject: c?.subject ?? "",
     body_html: c?.body_html ?? "",
-    from_name: c?.from_name ?? "Nexashield",
+    from_name: c?.from_name ?? "Webfortix",
     from_email: c?.from_email ?? "",
     segment: c?.segment ?? "all_customers",
     status: c?.status ?? "draft",

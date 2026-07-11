@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/account")({
   head: () => ({
     meta: [
-      { title: "My Account — Nexashield" },
+      { title: "My Account — Webfortix" },
       { name: "robots", content: "noindex" },
     ],
   }),

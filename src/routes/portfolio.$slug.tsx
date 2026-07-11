@@ -41,14 +41,14 @@ export const Route = createFileRoute("/portfolio/$slug")({
     if (!p) {
       return {
         meta: [
-          { title: "Case study not found — Nexashield" },
+          { title: "Case study not found — Webfortix" },
           { name: "robots", content: "noindex" },
         ],
       };
     }
     return {
       meta: [
-        { title: `${p.title} — Nexashield` },
+        { title: `${p.title} — Webfortix` },
         { name: "description", content: p.summary },
         { property: "og:title", content: p.title },
         { property: "og:description", content: p.summary },

@@ -38,11 +38,11 @@ export const Route = createFileRoute("/blog/$slug")({
   head: ({ loaderData }) => {
     const p = loaderData as Post | undefined;
     if (!p) {
-      return { meta: [{ title: "Post not found — Nexashield" }, { name: "robots", content: "noindex" }] };
+      return { meta: [{ title: "Post not found — Webfortix" }, { name: "robots", content: "noindex" }] };
     }
     return {
       meta: [
-        { title: `${p.title} — Nexashield` },
+        { title: `${p.title} — Webfortix` },
         { name: "description", content: p.excerpt || p.title },
         { property: "og:title", content: p.title },
         { property: "og:description", content: p.excerpt || p.title },
