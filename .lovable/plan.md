@@ -1,121 +1,89 @@
-This is a large multi-module build. I'll ship it in phases so you can review as we go, rather than dumping everything in one turn. Below is the plan — confirm and I'll start Phase 1.
+# Admin-managed API credentials + backend wiring
 
-## Stack & platform decisions
+## Overview
 
-- **Frontend**: TanStack Start (React 19 + Vite), Tailwind v4, shadcn/ui — mobile-first.
-- **Backend / DB / Auth / Storage**: Lovable Cloud (Postgres + Auth + file storage + server functions). Roles via a separate `user_roles` table with `has_role()` security-definer function (admin, staff, customer).
-- **Payments**: Paystack (default for NGN, supports subscriptions + partial payments via split/authorization). Flutterwave optional later. Integrated via server routes + webhooks under `/api/public/webhooks/paystack`.
-- **WhatsApp**: click-to-chat `wa.me` link (no API required).
-- **Email/SMTP & campaigns**: Lovable Emails (built-in) for transactional (quote receipts, order confirmations, shipping). Campaign sending via a simple broadcast queue table + Lovable Emails. Admin can manage from dashboard.
-- **Currency**: prices stored in NGN (kobo). USD toggle uses a daily FX rate cached in DB (admin-editable, optional live fetch later).
-- **SEO**: per-route `head()` metadata, `sitemap.xml` server route, `robots.txt`, semantic HTML, JSON-LD for products & articles.
+Admin enters all third-party credentials (Paystack, Resend, Zoom) from the existing Settings page. Values are stored encrypted at rest in the database using Supabase Vault, read server-side only, and masked (last 4 chars) in dashboard responses. All backend functions read from Vault at request time so keys can be rotated without a redeploy.
 
-## Data model (Postgres)
+## Phase 1 — Credential storage (foundation for everything else)
 
-```
-profiles(id→auth.users, full_name, phone, whatsapp, created_at)
-user_roles(id, user_id, role: admin|staff|customer)
-addresses(id, user_id, line1, city, state, notes)
+1. Migration: new `integration_credentials` table
+   - `provider` (paystack | resend | zoom), `key_name`, `secret_ref` (Vault secret id), `last4`, `updated_by`, timestamps
+   - RLS: admin/staff only via existing `has_role` function
+   - Grants for `authenticated` + `service_role`
+2. Server functions in `src/lib/credentials.functions.ts`:
+   - `saveCredential({ provider, keyName, value })` — writes to Vault, upserts row, returns masked
+   - `listCredentials()` — returns `[{ provider, keyName, last4, updatedAt }]` (never the value)
+   - `deleteCredential({ provider, keyName })`
+   - `testConnection({ provider })` — Paystack: GET `/transaction/totals`; Resend: GET `/domains`; Zoom: OAuth token fetch
+3. Server helper `src/lib/credentials.server.ts`:
+   - `getCredential(provider, keyName)` — reads from Vault, cached per-request
+4. Settings page: replace the "secret keys note" block with a real **Integrations** panel — 3 cards (Paystack / Resend / Zoom), each with input fields, save button, masked display of saved keys, and **Test Connection** button.
 
-services(slug, title, summary, body_md, hero_image, order)
-portfolio_items(id, slug, title, client, category, cover, gallery[], body_md, published)
-blog_posts(id, slug, title, excerpt, cover, body_md, author_id, published_at, tags[])
+## Phase 2 — Paystack hardening
 
-product_categories(id, slug, name, parent_id)
-products(id, slug, name, category_id, description, specs jsonb, images[],
-         price_ngn, compare_at_ngn, stock, low_stock_threshold, active, is_subscription, billing_interval)
-inventory_movements(id, product_id, delta, reason, created_by)
+- Update `src/lib/paystack.server.ts` to read secret + webhook secret from `getCredential()` (falls back to env for existing `PAYSTACK_SECRET_KEY`)
+- Webhook route: verify signature against admin-saved webhook secret; on `charge.success` insert into `payments` and trigger order-confirmation email + receipt PDF
+- Expose `PAYSTACK_PUBLIC_KEY` to checkout page via a server fn (not env)
 
-carts(id, user_id or session_id, created_at)
-cart_items(cart_id, product_id, qty, unit_price_ngn)
+## Phase 3 — Enrollments (post-payment training flow)
 
-orders(id, user_id, status, subtotal, shipping, total_ngn,
-       deposit_pct, deposit_amount, balance_amount, deposit_status, balance_status,
-       shipping_address jsonb, install_address jsonb, notes, created_at)
-order_items(order_id, product_id, name_snapshot, qty, unit_price_ngn)
-payments(id, order_id, provider, provider_ref, amount, kind: deposit|balance|full|subscription, status, raw jsonb)
+- Migration: `enrollments` table
+  - `user_id`, `order_id`, `program_slug`, `program_title`, `amount_ngn`, `transaction_ref`, `requested_start_date`, `status` (pending_contact | contacted | scheduled), `zoom_meeting_url`, `zoom_meeting_id`, `admin_notes`, timestamps
+- On successful Paystack payment for a training order, redirect user to new `/orders/$id/enroll` page with a date picker
+- Save enrollment → send confirmation email (receipt + requested start date + "we'll be in touch" note)
+- New admin route `/admin/enrollments` with status column and action buttons (Mark Contacted / Schedule)
+- When admin clicks "Schedule", show datetime picker → creates Zoom meeting via server fn → saves URL → emails customer
 
-subscriptions(id, user_id, product_id, paystack_sub_code, status, next_charge_at, cancelled_at)
+## Phase 4 — Resend email + logs
 
-quotes(id, name, email, phone, service_type, message, attachments[], status, assigned_to, created_at)
+- `src/lib/email.server.ts` — reads Resend API key from Vault, `sendEmail({ to, subject, html, tag })`
+- Migration: `email_logs` table (`to`, `subject`, `template`, `status`, `provider_id`, `error`, `sent_at`)
+- React Email templates: `OrderConfirmation`, `EnrollmentConfirmation`, `JobApplicationReceived`, `CampaignEmail` (brand-styled)
+- Wired triggers:
+  - Paystack webhook `charge.success` → OrderConfirmation + PDF receipt attachment
+  - Enrollment insert → EnrollmentConfirmation
+  - Contact form with `type=job` → JobApplicationReceived
+- New admin route `/admin/email-logs` (paginated table)
+- Test Connection button sends a test email to the admin's own email
 
-email_campaigns(id, subject, body_html, segment, status, scheduled_at, sent_at)
-email_recipients(campaign_id, email, sent_at, opened_at)
+## Phase 5 — PDF receipts
 
-fx_rates(code, rate_to_ngn, updated_at)
-site_settings(key, value jsonb)  -- WhatsApp #, deposit % default, etc.
-```
+- `src/lib/receipt.server.ts` using `pdf-lib` (Worker-safe)
+- Itemized: line items, amount, date, transaction ID, Webfortix business details, logo
+- Attached to order confirmation email + downloadable from `/orders/$id` via a signed server route
+- Stored ref logged in `payments.receipt_url`
 
-RLS: customers see only their orders/subscriptions/quotes; admins/staff see all via `has_role()`. Explicit GRANTs per table.
+## Phase 6 — Campaign send + tracking
 
-## Route map
+- Wire existing Campaigns UI to Resend batch send:
+  - Segment resolver: `all_customers` / `subscribers` / `leads` → recipient list from Supabase
+  - "Send now" button → chunked batch through Resend, updates `email_campaigns.sent_count` + `sent_at` + `status='sent'`
+- Add columns: `open_count`, `click_count`, `resend_broadcast_id`
+- Public route `/api/public/resend/webhook` — verifies Resend signature, increments open/click counts
 
-Public:
-- `/` home (3 pillars, CTAs)
-- `/services/web-design`, `/services/digital-marketing`, `/services/home-security`
-- `/portfolio`, `/portfolio/$slug`
-- `/blog`, `/blog/$slug`
-- `/shop`, `/shop/category/$slug`, `/shop/product/$slug`
-- `/cart`, `/checkout`, `/checkout/success`
-- `/contact` (quote form + file upload)
-- `/auth` (sign in / sign up)
-- `/sitemap.xml`, `/robots.txt`
+## Phase 7 — Zoom integration
 
-Authenticated customer (`_authenticated/`):
-- `/account`, `/account/orders`, `/account/orders/$id`, `/account/subscriptions`
+- Zoom Server-to-Server OAuth: admin saves `ZOOM_ACCOUNT_ID`, `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET` via Integrations panel
+- `src/lib/zoom.server.ts` — token cache + `createMeeting({ topic, start_time, duration, invitee_email })`
+- Test Connection = fetch OAuth token
+- Called from admin enrollment "Schedule" action
 
-Admin (`_authenticated/admin/` with role gate):
-- `/admin` overview + analytics
-- `/admin/orders`, `/admin/orders/$id`
-- `/admin/inventory`
-- `/admin/customers`
-- `/admin/quotes`
-- `/admin/subscriptions`
-- `/admin/content/blog`, `/admin/content/portfolio`, `/admin/content/services`
-- `/admin/campaigns`
-- `/admin/settings` (WhatsApp #, deposit %, FX rate, SMTP/email domain, payment keys)
+## Security guarantees
 
-Server routes:
-- `/api/public/webhooks/paystack` (signature-verified)
-- `/api/public/cron/campaigns` (send queued)
+- All secret values stored in Supabase Vault (`vault.secrets`), never in plain columns
+- No credential value ever returned by any server fn — only `last4`
+- Admin-only RLS + `has_role('admin' | 'staff')` check on every credential fn
+- Audit log table `admin_audit_log` records: who saved which key (no value), who sent which campaign, who changed enrollment status, who processed which payment
+- All third-party calls read secrets at request time inside the handler — never at module scope
 
-## Phased delivery
+## Technical implementation notes
 
-**Phase 1 — Foundation (this next turn if approved)**
-- Enable Lovable Cloud, set up design system (dark, security-tech feel — deep navy/steel + electric accent, NOT purple), Tailwind tokens
-- Auth (email/password + Google), roles table + `has_role()`, `_authenticated` and admin gates
-- Header/footer, homepage with 3 pillars, 3 service detail pages, contact/quote form with file upload to storage, WhatsApp float button
-- SEO: per-route head, sitemap, robots
+- Vault access: use `vault.create_secret(value, name)` → returns `id`; read via `select decrypted_secret from vault.decrypted_secrets where id = $1`. Wrapped in SECURITY DEFINER functions since `vault` schema is service-role-only
+- Existing `PAYSTACK_SECRET_KEY` env var: `getCredential('paystack', 'secret_key')` falls back to `process.env.PAYSTACK_SECRET_KEY` when no vault row exists — zero downtime migration
+- Zoom S2S token: cached in-memory per-Worker (1 hour TTL) to avoid re-auth per request
+- PDF generation uses `pdf-lib` (pure JS, Worker-compatible) — no `sharp`/`puppeteer`
+- Contact form job-application detection: existing `contact` route gains a `type` field
 
-**Phase 2 — Content & portfolio**
-- Blog list + detail, portfolio list + detail
-- Admin CMS for blog / portfolio / services (markdown editor)
+## Order of shipping
 
-**Phase 3 — Store**
-- Product catalog, categories, product detail, NGN/USD toggle
-- Cart (persisted for signed-in, session for guest), checkout form
-- Paystack integration: initialize transaction, verify webhook, deposit vs full payment option
-- Order confirmation email, order tracking page
-
-**Phase 4 — Subscriptions & orders admin**
-- Paystack subscription plans for monitoring, customer subscription page, cancel flow
-- Admin orders (status transitions, mark deposit/balance paid), inventory with low-stock alerts, customer DB, quote/lead pipeline
-
-**Phase 5 — Analytics, campaigns, polish**
-- Sales dashboard (revenue, top products, MRR)
-- Email campaigns (compose, segment, schedule, send via cron)
-- Settings screen for API keys, WhatsApp number, deposit %, FX rate
-- Performance pass (image optimization, lazy loading), a11y & mobile QA
-
-## Secrets I'll need from you (I'll prompt at the right phase, not now)
-- Paystack **secret key** + **public key** (test first, live later)
-- WhatsApp business phone number (E.164, e.g. +2348...)
-- Company email domain for Lovable Emails (to send from `hello@yourdomain`)
-- Optional: Google OAuth (I'll wire via Lovable's managed Google sign-in — no keys needed from you)
-
-## Design direction
-I'll go with a bold, security-tech aesthetic: dark background, high-contrast type, an electric cyan/lime accent, subtle grid/scanline motifs, and product-forward cards for the shop. If you want a lighter / warmer / more "consumer home" look instead, tell me now and I'll adjust before Phase 1.
-
----
-
-Reply **"go"** to start Phase 1, or tell me what to change (scope, phase order, design direction, payment provider preference).
+I'll build Phase 1 first (unblocks everything). Once you can save keys from Settings, phases 2→7 land in sequence. Total ~7 migrations, ~15 new server functions, 3 new admin routes.
