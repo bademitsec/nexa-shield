@@ -43,7 +43,20 @@ function ProductPage() {
   if (isLoading) return <div className="container-x py-16 text-sm text-muted-foreground">Loading…</div>;
   if (!product) return <div className="container-x py-16">Not found.</div>;
 
-  const specs = (product.specs || {}) as Record<string, string | number>;
+  const rawSpecs = (product.specs || {}) as Record<string, unknown>;
+  const features = Array.isArray(rawSpecs.features) ? (rawSpecs.features as string[]) : [];
+  const tech = (typeof rawSpecs.tech === "object" && rawSpecs.tech
+    ? rawSpecs.tech
+    : rawSpecs) as Record<string, string | number>;
+  const useCase = typeof rawSpecs.use_case === "string" ? rawSpecs.use_case : null;
+  const recFor = typeof rawSpecs.recommended_for === "string" ? rawSpecs.recommended_for : null;
+  const hookLine = (typeof rawSpecs.hook_line === "string" ? rawSpecs.hook_line : null) ?? product.short_description;
+
+  const techEntries = Object.entries(tech).filter(
+    ([k, v]) => !["features", "use_case", "recommended_for", "hook_line", "image_brief", "price_usd", "tech"].includes(k) &&
+      (typeof v === "string" || typeof v === "number")
+  ) as [string, string | number][];
+
   const maxQty = product.is_subscription ? 1 : Math.max(0, product.stock);
   const outOfStock = !product.is_subscription && product.stock <= 0;
 
@@ -82,15 +95,21 @@ function ProductPage() {
           {product.images?.[0] ? (
             <img src={product.images[0]} alt={product.name} className="h-full w-full object-cover" />
           ) : (
-            <Shield className="h-20 w-20 text-primary/30" />
+            <div className="flex flex-col items-center gap-2 text-primary/40">
+              <Shield className="h-16 w-16" />
+              <span className="text-[10px] uppercase tracking-widest">Photo coming soon</span>
+            </div>
           )}
         </div>
 
         <div>
-          <h1 className="font-display text-2xl md:text-3xl font-bold">{product.name}</h1>
-          {product.short_description && (
-            <p className="mt-2 text-muted-foreground">{product.short_description}</p>
+          {recFor && (
+            <span className="inline-block rounded-full border border-border/60 bg-background/70 px-2.5 py-0.5 text-[11px] font-semibold">
+              Recommended for {recFor}
+            </span>
           )}
+          <h1 className="mt-3 font-display text-2xl md:text-3xl font-bold">{product.name}</h1>
+          {hookLine && <p className="mt-2 text-muted-foreground">{hookLine}</p>}
 
           <div className="mt-5 flex items-baseline gap-3">
             <Price ngn={product.price_ngn} className="text-3xl font-bold" />
@@ -114,9 +133,30 @@ function ProductPage() {
             </p>
           )}
 
-          {Object.keys(specs).length > 0 && (
+          {features.length > 0 && (
+            <div className="mt-6">
+              <h3 className="text-xs uppercase tracking-widest text-accent">What you get</h3>
+              <ul className="mt-2 space-y-1.5">
+                {features.map((f, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {useCase && (
+            <div className="mt-6 rounded-lg border border-border/60 bg-card/40 p-4">
+              <h3 className="text-xs uppercase tracking-widest text-accent">Best used for</h3>
+              <p className="mt-1.5 text-sm text-muted-foreground">{useCase}</p>
+            </div>
+          )}
+
+          {techEntries.length > 0 && (
             <div className="mt-6 rounded-lg border border-border/60 bg-card/40 divide-y divide-border/60">
-              {Object.entries(specs).map(([k, v]) => (
+              {techEntries.map(([k, v]) => (
                 <div key={k} className="flex justify-between px-4 py-2.5 text-sm">
                   <span className="capitalize text-muted-foreground">{k.replace(/_/g, " ")}</span>
                   <span className="font-medium text-right">{String(v)}</span>
@@ -128,36 +168,21 @@ function ProductPage() {
           <div className="mt-8 flex flex-wrap items-center gap-3">
             {!product.is_subscription && (
               <div className="inline-flex items-center rounded-md border border-border/60">
-                <button
-                  type="button"
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
-                  className="grid h-10 w-10 place-items-center hover:bg-secondary"
-                  aria-label="Decrease"
-                >
+                <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} className="grid h-10 w-10 place-items-center hover:bg-secondary" aria-label="Decrease">
                   <Minus className="h-4 w-4" />
                 </button>
                 <span className="w-10 text-center text-sm font-medium">{qty}</span>
-                <button
-                  type="button"
-                  onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
-                  className="grid h-10 w-10 place-items-center hover:bg-secondary"
-                  aria-label="Increase"
-                >
+                <button type="button" onClick={() => setQty((q) => Math.min(maxQty, q + 1))} className="grid h-10 w-10 place-items-center hover:bg-secondary" aria-label="Increase">
                   <Plus className="h-4 w-4" />
                 </button>
               </div>
             )}
-            <Button
-              size="lg"
-              disabled={outOfStock}
-              onClick={handleAdd}
-              className="bg-accent text-accent-foreground hover:bg-accent/90"
-            >
+            <Button size="lg" disabled={outOfStock} onClick={handleAdd} className="bg-accent text-accent-foreground hover:bg-accent/90">
               {added ? <Check className="h-4 w-4 mr-2" /> : <ShoppingCart className="h-4 w-4 mr-2" />}
               {outOfStock ? "Out of stock" : added ? "Added" : "Add to cart"}
             </Button>
-            <Button variant="outline" onClick={() => router.navigate({ to: "/cart" })}>
-              View cart
+            <Button variant="outline" asChild>
+              <Link to="/contact">Get a quote</Link>
             </Button>
           </div>
 
