@@ -136,6 +136,6 @@ export async function logAdminAction(
     action,
     target_type: targetType ?? null,
     target_id: targetId ?? null,
-    metadata,
+    metadata: metadata as never,
   });
 }
