@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TrainingRouteImport } from './routes/training'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as OrdersRouteImport } from './routes/orders'
@@ -40,6 +41,11 @@ import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
 import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api.public.paystack.webhook'
 
+const TrainingRoute = TrainingRouteImport.update({
+  id: '/training',
+  path: '/training',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
@@ -206,6 +212,7 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
+  '/training': typeof TrainingRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -237,6 +244,7 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
+  '/training': typeof TrainingRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -270,6 +278,7 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
+  '/training': typeof TrainingRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/portfolio'
     | '/shop'
+    | '/training'
     | '/admin/campaigns'
     | '/admin/content'
     | '/admin/customers'
@@ -335,6 +345,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/portfolio'
     | '/shop'
+    | '/training'
     | '/admin/campaigns'
     | '/admin/content'
     | '/admin/customers'
@@ -367,6 +378,7 @@ export interface FileRouteTypes {
     | '/orders'
     | '/portfolio'
     | '/shop'
+    | '/training'
     | '/admin/campaigns'
     | '/admin/content'
     | '/admin/customers'
@@ -400,6 +412,7 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRouteWithChildren
   PortfolioRoute: typeof PortfolioRouteWithChildren
   ShopRoute: typeof ShopRouteWithChildren
+  TrainingRoute: typeof TrainingRoute
   ServicesDigitalMarketingRoute: typeof ServicesDigitalMarketingRoute
   ServicesHomeSecurityRoute: typeof ServicesHomeSecurityRoute
   ServicesWebDesignRoute: typeof ServicesWebDesignRoute
@@ -408,6 +421,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/training': {
+      id: '/training'
+      path: '/training'
+      fullPath: '/training'
+      preLoaderRoute: typeof TrainingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/shop': {
       id: '/shop'
       path: '/shop'
@@ -715,6 +735,7 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRouteWithChildren,
   PortfolioRoute: PortfolioRouteWithChildren,
   ShopRoute: ShopRouteWithChildren,
+  TrainingRoute: TrainingRoute,
   ServicesDigitalMarketingRoute: ServicesDigitalMarketingRoute,
   ServicesHomeSecurityRoute: ServicesHomeSecurityRoute,
   ServicesWebDesignRoute: ServicesWebDesignRoute,
