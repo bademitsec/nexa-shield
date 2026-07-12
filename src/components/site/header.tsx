@@ -16,6 +16,7 @@ const services = [
 const nav = [
   { to: "/shop", label: "Shop" },
   { to: "/portfolio", label: "Portfolio" },
+  { to: "/training", label: "Training" },
   { to: "/careers", label: "Careers" },
   { to: "/blog", label: "Blog" },
   { to: "/contact", label: "Contact" },
