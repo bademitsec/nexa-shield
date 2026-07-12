@@ -10,9 +10,10 @@ const KEY_SCHEMA: Record<(typeof PROVIDERS)[number], string[]> = {
   zoom: ["account_id", "client_id", "client_secret"],
 };
 
-async function assertStaff(supabase: Awaited<ReturnType<typeof import("@/integrations/supabase/auth-middleware").requireSupabaseAuth>>["context"]["supabase"], userId: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function assertStaff(supabase: any, userId: string) {
   const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-  const roles = (data ?? []).map((r) => r.role);
+  const roles = (data ?? []).map((r: { role: string }) => r.role);
   const isStaff = roles.includes("admin") || roles.includes("staff");
   if (!isStaff) throw new Error("Forbidden");
 }
