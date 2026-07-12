@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       blog_posts: {
         Row: {
           author_id: string | null
@@ -113,6 +143,39 @@ export type Database = {
           status?: string
           subject?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      integration_credentials: {
+        Row: {
+          created_at: string
+          id: string
+          key_name: string
+          last4: string
+          provider: string
+          secret_ref: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key_name: string
+          last4: string
+          provider: string
+          secret_ref: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key_name?: string
+          last4?: string
+          provider?: string
+          secret_ref?: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
@@ -698,7 +761,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      vault_delete_secret: { Args: { _id: string }; Returns: undefined }
+      vault_read_secret: { Args: { _id: string }; Returns: string }
+      vault_write_secret: {
+        Args: { _name: string; _value: string }
+        Returns: string
+      }
     }
     Enums: {
       app_role: "admin" | "staff" | "customer"
