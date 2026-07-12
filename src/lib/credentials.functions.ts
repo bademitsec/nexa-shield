@@ -80,7 +80,7 @@ export const testConnection = createServerFn({ method: "POST" })
         });
         const json = (await res.json().catch(() => ({}))) as { status?: boolean; message?: string };
         const ok = res.ok && json.status !== false;
-        await logAdminAction(context.userId, "credential.test", "paystack", null, { ok });
+        await logAdminAction(context.userId, "credential.test", "paystack", undefined, { ok });
         return { ok, message: ok ? "Paystack connection OK" : json.message || `HTTP ${res.status}` };
       }
       if (data.provider === "resend") {
@@ -90,7 +90,7 @@ export const testConnection = createServerFn({ method: "POST" })
           headers: { Authorization: `Bearer ${key}` },
         });
         const ok = res.ok;
-        await logAdminAction(context.userId, "credential.test", "resend", null, { ok });
+        await logAdminAction(context.userId, "credential.test", "resend", undefined, { ok });
         return { ok, message: ok ? "Resend connection OK" : `HTTP ${res.status}` };
       }
       if (data.provider === "zoom") {
@@ -104,7 +104,7 @@ export const testConnection = createServerFn({ method: "POST" })
           { method: "POST", headers: { Authorization: `Basic ${basic}` } },
         );
         const ok = res.ok;
-        await logAdminAction(context.userId, "credential.test", "zoom", null, { ok });
+        await logAdminAction(context.userId, "credential.test", "zoom", undefined, { ok });
         return { ok, message: ok ? "Zoom connection OK" : `HTTP ${res.status}` };
       }
       return { ok: false, message: "Unknown provider" };
