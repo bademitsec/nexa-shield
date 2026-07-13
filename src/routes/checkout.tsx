@@ -47,7 +47,7 @@ function CheckoutPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { country: "Nigeria" },
+    defaultValues: { country: "" },
   });
 
   useEffect(() => {
@@ -95,7 +95,7 @@ function CheckoutPage() {
             line2: v.line2 || "",
             city: v.city,
             state: v.state,
-            country: v.country || "Nigeria",
+            country: v.country || "",
           },
           customer_notes: v.customer_notes || "",
           payment_mode: mode,
@@ -149,7 +149,7 @@ function CheckoutPage() {
                 <Input {...form.register("state")} />
               </Field>
               <Field label="Country">
-                <Input {...form.register("country")} defaultValue="Nigeria" />
+                <Input {...form.register("country")} placeholder="Country" />
               </Field>
             </div>
           </Section>

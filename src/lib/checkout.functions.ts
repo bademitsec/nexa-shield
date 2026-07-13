@@ -18,7 +18,7 @@ const createOrderSchema = z.object({
     line2: z.string().max(200).optional().default(""),
     city: z.string().min(2).max(80),
     state: z.string().min(2).max(80),
-    country: z.string().max(80).default("Nigeria"),
+    country: z.string().max(80).default(""),
   }),
   customer_notes: z.string().max(1000).optional().default(""),
   payment_mode: z.enum(["full", "deposit"]),
