@@ -26,7 +26,7 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Get a scoped quote for web design, digital marketing or home security in Nigeria. Upload floor plans or site photos for a faster estimate.",
+          "Get a scoped quote for web design, digital marketing or home security in Africa. Upload floor plans or site photos for a faster estimate.",
       },
       { property: "og:title", content: `Contact ${site.name}` },
       { property: "og:description", content: "Request a scoped quote — reply within 1 business day." },

@@ -36,10 +36,10 @@ export const Route = createFileRoute("/blog")({
       {
         name: "description",
         content:
-          "Guides on home security, digital marketing and web performance for Nigerian businesses and homeowners.",
+          "Guides on home security, digital marketing and web performance for African businesses and homeowners.",
       },
       { property: "og:title", content: "Webfortix Blog" },
-      { property: "og:description", content: "Guides on security, marketing & web for Nigerian businesses." },
+      { property: "og:description", content: "Guides on security, marketing & web for African businesses." },
     ],
   }),
   loader: ({ context }) => context.queryClient.ensureQueryData(listOpts),
@@ -77,7 +77,7 @@ function BlogPage() {
               <div className="p-5">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                   {p.published_at && (
-                    <span>{new Date(p.published_at).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}</span>
+                    <span>{new Date(p.published_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</span>
                   )}
                   {p.reading_minutes && (
                     <span className="inline-flex items-center gap-1">

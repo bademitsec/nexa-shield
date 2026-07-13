@@ -16,7 +16,7 @@ export const Route = createFileRoute("/shop")({
       { title: `Products & Security Hardware — ${site.name}` },
       { name: "description", content: "CCTV, NVRs, solar & 4G cameras, PTZ, video doorbells and smart-home automation. Real spec sheets, real install advice, real prices in NGN & USD." },
       { property: "og:title", content: `Security Hardware Shop — ${site.name}` },
-      { property: "og:description", content: "CCTV, NVRs, solar & site cameras, PTZ, video doorbells and smart-home automation — with expert install across Nigeria." },
+      { property: "og:description", content: "CCTV, NVRs, solar & site cameras, PTZ, video doorbells and smart-home automation — with expert install across Africa." },
     ],
   }),
   component: ShopPage,
@@ -216,7 +216,7 @@ function ShopPage() {
           <Package className="h-6 w-6 text-accent shrink-0 mt-0.5" />
           <div>
             <h3 className="font-semibold">Need installation or a custom quote?</h3>
-            <p className="text-sm text-muted-foreground">Site survey, cabling & install available across Nigeria.</p>
+            <p className="text-sm text-muted-foreground">Site survey, cabling & install available across Africa.</p>
           </div>
         </div>
         <Link to="/contact" className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground hover:bg-accent/90">
