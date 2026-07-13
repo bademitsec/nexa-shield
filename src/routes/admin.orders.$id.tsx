@@ -162,7 +162,12 @@ function AdminOrderDetail() {
 
         <aside className="space-y-4">
           <div className="rounded-xl border border-border/60 bg-card/40 p-5">
-            <h3 className="font-semibold">Totals</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Totals</h3>
+              <span className="rounded-full bg-primary/15 text-primary px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider">
+                {paymentType}
+              </span>
+            </div>
             <dl className="mt-3 space-y-1 text-sm">
               <Row label="Subtotal" v={formatNGN(order.subtotal_ngn)} />
               <Row label="Shipping" v={formatNGN(order.shipping_ngn)} />
@@ -170,13 +175,44 @@ function AdminOrderDetail() {
               <Row label="Paid" v={formatNGN(order.paid_amount_ngn)} />
               <Row label="Balance" v={formatNGN(order.balance_amount_ngn)} />
             </dl>
-            {Number(order.balance_amount_ngn) > 0 && (
-              <Button size="sm" variant="outline" className="mt-3 w-full" onClick={markBalancePaid}>
-                Mark balance received
-              </Button>
-            )}
             <p className="mt-3 text-xs text-muted-foreground">Placed {formatDate(order.created_at)}</p>
           </div>
+
+          {Number(order.balance_amount_ngn) > 0 && (
+            <div className="rounded-xl border border-border/60 bg-card/40 p-5 space-y-3">
+              <h3 className="font-semibold">Collect balance</h3>
+              <p className="text-xs text-muted-foreground">Outstanding: {formatNGN(order.balance_amount_ngn)}</p>
+
+              <div className="space-y-2">
+                <Button size="sm" variant="outline" className="w-full" disabled={linkBusy} onClick={sendBalanceLink}>
+                  {linkBusy ? "Generating…" : "Generate Paystack balance link"}
+                </Button>
+                {balanceLink && (
+                  <div className="rounded-md bg-background/60 border border-border/60 p-2 text-[11px] break-all">
+                    <a href={balanceLink} target="_blank" rel="noreferrer" className="text-primary hover:underline">{balanceLink}</a>
+                    <p className="mt-1 text-muted-foreground">Copied to clipboard. Send this to {order.email}.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-border/60 space-y-2">
+                <Label className="text-xs">Record manual payment</Label>
+                <Input type="number" min="0" placeholder="Amount (₦)" value={manualAmount} onChange={(e) => setManualAmount(e.target.value)} />
+                <select value={manualChannel} onChange={(e) => setManualChannel(e.target.value)}
+                  className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                  <option value="bank_transfer">Bank transfer</option>
+                  <option value="cash">Cash</option>
+                  <option value="pos">POS</option>
+                  <option value="cheque">Cheque</option>
+                  <option value="manual">Other</option>
+                </select>
+                <Input placeholder="Reference (optional)" value={manualRef} onChange={(e) => setManualRef(e.target.value)} />
+                <Button size="sm" className="w-full" disabled={manualBusy} onClick={recordManual}>
+                  {manualBusy ? "Recording…" : "Record payment"}
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="rounded-xl border border-border/60 bg-card/40 p-5 space-y-3">
             <h3 className="font-semibold">Update</h3>
