@@ -6,16 +6,16 @@ import { site } from "@/lib/site-config";
 export const Route = createFileRoute("/services/web-design")({
   head: () => ({
     meta: [
-      { title: "Web Design & Development in Nigeria — Webfortix" },
+      { title: "Web Design & Development in Africa — Webfortix" },
       {
         name: "description",
         content:
-          "Custom websites, e-commerce and web apps built for speed, mobile, and Google. Nigerian-owned agency, fixed-scope quotes.",
+          "Custom websites, e-commerce and web apps built for speed, mobile, and Google. African-owned agency, fixed-scope quotes.",
       },
       { property: "og:title", content: "Web Design & Development — Webfortix" },
       {
         property: "og:description",
-        content: "Fast, SEO-ready websites built for Nigerian businesses.",
+        content: "Fast, SEO-ready websites built for African businesses.",
       },
     ],
   }),
