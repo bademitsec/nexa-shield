@@ -20,7 +20,7 @@ function AdminOrders() {
     queryKey: ["admin","orders",status,q],
     queryFn: async () => {
       let query = supabase.from("orders")
-        .select("id,order_number,full_name,email,total_ngn,paid_amount_ngn,payment_status,status,created_at")
+        .select("id,order_number,full_name,email,total_ngn,deposit_amount_ngn,balance_amount_ngn,paid_amount_ngn,payment_status,status,created_at")
         .order("created_at",{ascending:false}).limit(200);
       if (status !== "all") query = query.eq("status", status as never);
       if (q.trim()) query = query.or(`order_number.ilike.%${q}%,full_name.ilike.%${q}%,email.ilike.%${q}%`);
