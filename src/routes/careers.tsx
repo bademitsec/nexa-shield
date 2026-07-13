@@ -116,7 +116,7 @@ function CareersPage() {
             {
               icon: Globe2,
               title: "Remote-friendly",
-              body: "Most roles are fully remote across Nigeria. Field roles for security & automation are Lagos-based.",
+              body: "Most roles are fully remote across Africa. Field roles for security & automation are Lagos-based.",
             },
           ].map((f) => (
             <div
