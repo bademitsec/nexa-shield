@@ -24,7 +24,7 @@ export const Route = createFileRoute("/training")({
       {
         name: "description",
         content:
-          "Online training in web design, web development, digital marketing, e-business and content creation — taught by working practitioners. Enroll from Nigeria or anywhere.",
+          "Online training in web design, web development, digital marketing, e-business and content creation — taught by working practitioners. Enroll from Africa or anywhere.",
       },
       {
         property: "og:title",
@@ -128,7 +128,7 @@ const PROGRAMS: Program[] = [
     learn: [
       "Picking a niche and validating demand quickly",
       "Setting up an e-commerce or service business online",
-      "Payment gateways for Nigeria and international",
+      "Payment gateways for Africa and international",
       "Suppliers, fulfilment and simple operations",
       "Customer acquisition on a small budget",
       "Basic bookkeeping, pricing and unit economics",

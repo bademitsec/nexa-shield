@@ -49,7 +49,7 @@ export const Route = createFileRoute("/portfolio")({
       {
         name: "description",
         content:
-          "Real projects from Webfortix: web builds, marketing campaigns and home security installs — with measurable outcomes for Nigerian clients.",
+          "Real projects from Webfortix: web builds, marketing campaigns and home security installs — with measurable outcomes for African clients.",
       },
       { property: "og:title", content: "Case Studies — Webfortix" },
       {

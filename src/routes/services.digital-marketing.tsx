@@ -5,16 +5,16 @@ import { ServiceLayout } from "./services.web-design";
 export const Route = createFileRoute("/services/digital-marketing")({
   head: () => ({
     meta: [
-      { title: "Digital Marketing Agency in Nigeria — Webfortix" },
+      { title: "Digital Marketing Agency in Africa — Webfortix" },
       {
         name: "description",
         content:
-          "SEO, Google & Meta ads, social media and content marketing that drives leads for Nigerian businesses. Transparent monthly retainers.",
+          "SEO, Google & Meta ads, social media and content marketing that drives leads for African businesses. Transparent monthly retainers.",
       },
       { property: "og:title", content: "Digital Marketing — Webfortix" },
       {
         property: "og:description",
-        content: "SEO, ads, social & content for growing Nigerian brands.",
+        content: "SEO, ads, social & content for growing African brands.",
       },
     ],
   }),
@@ -26,7 +26,7 @@ function DigitalMarketingPage() {
     <ServiceLayout
       eyebrow="Digital Marketing"
       title="Drive qualified traffic. Turn it into revenue."
-      lede="SEO, Google & Meta ads, social media and content marketing — built for the Nigerian market and measured against real business goals."
+      lede="SEO, Google & Meta ads, social media and content marketing — built for the African market and measured against real business goals."
       features={[
         { icon: Search, title: "SEO", desc: "Technical audits, on-page, content, local & backlinks." },
         { icon: Target, title: "Paid ads", desc: "Google, Meta, TikTok — creative + conversion tracking." },

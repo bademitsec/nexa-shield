@@ -2,12 +2,12 @@ export const site = {
   name: "Webfortix",
   tagline: "Web. Marketing. Security.",
   description:
-    "Webfortix builds fast websites, growth-driven digital marketing, and installs smart home security systems across Nigeria.",
+    "Webfortix builds fast websites, growth-driven digital marketing, and installs smart home security systems across Africa.",
   url: "https://webfortix.ng",
   whatsapp: "2348000000000", // digits only, E.164 without +
   email: "hello@webfortix.ng",
   phone: "+234 800 000 0000",
-  address: "Lagos, Nigeria",
+  address: "Lagos",
 };
 
 export const services = [
@@ -23,7 +23,7 @@ export const services = [
     title: "Digital Marketing",
     short: "SEO, ads, social & content",
     description:
-      "Drive qualified traffic and leads with search, paid ads, and content built for the Nigerian market.",
+      "Drive qualified traffic and leads with search, paid ads, and content built for the African market.",
   },
   {
     slug: "home-security",

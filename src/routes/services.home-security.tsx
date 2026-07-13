@@ -5,16 +5,16 @@ import { ServiceLayout } from "./services.web-design";
 export const Route = createFileRoute("/services/home-security")({
   head: () => ({
     meta: [
-      { title: "Home Security & Automation Installers in Nigeria — Webfortix" },
+      { title: "Home Security & Automation Installers in Africa — Webfortix" },
       {
         name: "description",
         content:
-          "CCTV cameras, NVRs, alarms, smart locks and 24/7 cloud monitoring — supplied and professionally installed across Nigeria.",
+          "CCTV cameras, NVRs, alarms, smart locks and 24/7 cloud monitoring — supplied and professionally installed across Africa.",
       },
       { property: "og:title", content: "Home Security & Automation — Webfortix" },
       {
         property: "og:description",
-        content: "CCTV, alarms, smart locks and 24/7 monitoring across Nigeria.",
+        content: "CCTV, alarms, smart locks and 24/7 monitoring across Africa.",
       },
     ],
   }),
