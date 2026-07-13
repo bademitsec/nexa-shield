@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNGN, formatDate } from "@/lib/format";
 import { AdminHeader } from "@/components/admin/sidebar";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { adminCreateBalanceLink, adminRecordManualPayment } from "@/lib/admin-payments.functions";
 
 const STATUSES = ["pending","confirmed","processing","installing","shipped","delivered","completed","cancelled","refunded"] as const;
 const PAYMENTS = ["unpaid","deposit_paid","fully_paid","refunded","failed"] as const;
