@@ -44,7 +44,7 @@ function HomePage() {
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-accent" />
-              Serving homes & businesses Across Africa
+              Nigerian-owned · Serving homes & businesses Across Africa
             </span>
             <h1 className="mt-6 text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
               Build online.{" "}
