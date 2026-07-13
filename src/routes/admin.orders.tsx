@@ -20,7 +20,7 @@ function AdminOrders() {
     queryKey: ["admin","orders",status,q],
     queryFn: async () => {
       let query = supabase.from("orders")
-        .select("id,order_number,full_name,email,total_ngn,paid_amount_ngn,payment_status,status,created_at")
+        .select("id,order_number,full_name,email,total_ngn,deposit_amount_ngn,balance_amount_ngn,paid_amount_ngn,payment_status,status,created_at")
         .order("created_at",{ascending:false}).limit(200);
       if (status !== "all") query = query.eq("status", status as never);
       if (q.trim()) query = query.or(`order_number.ilike.%${q}%,full_name.ilike.%${q}%,email.ilike.%${q}%`);
@@ -44,23 +44,31 @@ function AdminOrders() {
         <table className="w-full text-sm">
           <thead className="border-b border-border/60 text-xs uppercase text-muted-foreground">
             <tr>
-              <Th>Order #</Th><Th>Customer</Th><Th>Total</Th><Th>Payment</Th><Th>Status</Th><Th>Date</Th>
+              <Th>Order #</Th><Th>Customer</Th><Th>Total</Th><Th>Type</Th><Th>Payment</Th><Th>Status</Th><Th>Date</Th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/60">
-            {isLoading && <tr><td colSpan={6} className="p-6 text-muted-foreground text-center">Loading…</td></tr>}
-            {orders.map((o) => (
+            {isLoading && <tr><td colSpan={7} className="p-6 text-muted-foreground text-center">Loading…</td></tr>}
+            {orders.map((o) => {
+              const type = Number(o.deposit_amount_ngn ?? 0) > 0 && Number(o.deposit_amount_ngn) < Number(o.total_ngn)
+                ? "Deposit" : "Full";
+              const balance = Number(o.balance_amount_ngn ?? 0);
+              return (
               <tr key={o.id} className="hover:bg-secondary/40">
                 <Td><Link to="/admin/orders/$id" params={{id: o.id}} className="font-mono text-primary hover:underline">{o.order_number}</Link></Td>
                 <Td><div>{o.full_name}</div><div className="text-xs text-muted-foreground">{o.email}</div></Td>
                 <Td>{formatNGN(o.total_ngn)}<div className="text-xs text-muted-foreground">Paid {formatNGN(o.paid_amount_ngn ?? 0)}</div></Td>
-                <Td><span className="capitalize">{o.payment_status.replace(/_/g," ")}</span></Td>
+                <Td><span className={`rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${type === "Deposit" ? "bg-amber-500/15 text-amber-400" : "bg-emerald-500/15 text-emerald-400"}`}>{type}</span></Td>
+                <Td>
+                  <div className="capitalize">{o.payment_status.replace(/_/g," ")}</div>
+                  {balance > 0 && <div className="text-xs text-amber-400">Balance {formatNGN(balance)}</div>}
+                </Td>
                 <Td><span className="capitalize">{o.status}</span></Td>
                 <Td className="text-xs text-muted-foreground">{formatDate(o.created_at)}</Td>
               </tr>
-            ))}
+            );})}
             {!isLoading && orders.length === 0 && (
-              <tr><td colSpan={6} className="p-6 text-muted-foreground text-center">No orders match.</td></tr>
+              <tr><td colSpan={7} className="p-6 text-muted-foreground text-center">No orders match.</td></tr>
             )}
           </tbody>
         </table>

@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { formatNGN, formatDate } from "@/lib/format";
 import { AdminHeader } from "@/components/admin/sidebar";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { adminCreateBalanceLink, adminRecordManualPayment } from "@/lib/admin-payments.functions";
 
 const STATUSES = ["pending","confirmed","processing","installing","shipped","delivered","completed","cancelled","refunded"] as const;
 const PAYMENTS = ["unpaid","deposit_paid","fully_paid","refunded","failed"] as const;
@@ -38,6 +40,14 @@ function AdminOrderDetail() {
   const [tracking, setTracking] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [manualAmount, setManualAmount] = useState<string>("");
+  const [manualChannel, setManualChannel] = useState<string>("bank_transfer");
+  const [manualRef, setManualRef] = useState<string>("");
+  const [manualBusy, setManualBusy] = useState(false);
+  const [linkBusy, setLinkBusy] = useState(false);
+  const [balanceLink, setBalanceLink] = useState<string | null>(null);
+  const createLinkFn = useServerFn(adminCreateBalanceLink);
+  const recordManualFn = useServerFn(adminRecordManualPayment);
 
   useEffect(() => {
     (async () => {
@@ -72,18 +82,54 @@ function AdminOrderDetail() {
     else toast.success("Order updated");
   };
 
-  const markBalancePaid = async () => {
-    const paid = Number(order.total_ngn);
-    const { error } = await supabase.from("orders").update({
-      paid_amount_ngn: paid,
-      balance_amount_ngn: 0,
-      payment_status: "fully_paid",
-    }).eq("id", order.id);
-    if (error) return toast.error(error.message);
-    setOrder({ ...order, paid_amount_ngn: paid, balance_amount_ngn: 0, payment_status: "fully_paid" });
-    setPayment("fully_paid");
-    toast.success("Balance marked paid");
+  const sendBalanceLink = async () => {
+    if (!order) return;
+    setLinkBusy(true);
+    setBalanceLink(null);
+    try {
+      const res = await createLinkFn({ data: { orderId: order.id, origin: window.location.origin } });
+      if (res.authorization_url) {
+        setBalanceLink(res.authorization_url);
+        try { await navigator.clipboard.writeText(res.authorization_url); } catch { /* ignore */ }
+        toast.success("Balance payment link ready — copied to clipboard");
+      } else {
+        toast.error("Paystack did not return a link");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to create link");
+    } finally {
+      setLinkBusy(false);
+    }
   };
+
+  const recordManual = async () => {
+    if (!order) return;
+    const amt = Number(manualAmount);
+    if (!amt || amt <= 0) return toast.error("Enter a valid amount");
+    setManualBusy(true);
+    try {
+      const res = await recordManualFn({ data: {
+        orderId: order.id,
+        amount_ngn: amt,
+        kind: "balance",
+        channel: manualChannel || "manual",
+        reference: manualRef || undefined,
+      } });
+      setOrder({ ...order, paid_amount_ngn: res.paid_amount_ngn, balance_amount_ngn: res.balance_amount_ngn, payment_status: res.payment_status });
+      setPayment(res.payment_status);
+      setManualAmount("");
+      setManualRef("");
+      toast.success("Manual payment recorded");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to record payment");
+    } finally {
+      setManualBusy(false);
+    }
+  };
+
+  const paymentType: "Full" | "Deposit (80/20)" =
+    Number(order.deposit_amount_ngn) > 0 && Number(order.deposit_amount_ngn) < Number(order.total_ngn)
+      ? "Deposit (80/20)" : "Full";
 
   const addr = order.shipping_address || {};
 
@@ -116,7 +162,12 @@ function AdminOrderDetail() {
 
         <aside className="space-y-4">
           <div className="rounded-xl border border-border/60 bg-card/40 p-5">
-            <h3 className="font-semibold">Totals</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Totals</h3>
+              <span className="rounded-full bg-primary/15 text-primary px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider">
+                {paymentType}
+              </span>
+            </div>
             <dl className="mt-3 space-y-1 text-sm">
               <Row label="Subtotal" v={formatNGN(order.subtotal_ngn)} />
               <Row label="Shipping" v={formatNGN(order.shipping_ngn)} />
@@ -124,13 +175,44 @@ function AdminOrderDetail() {
               <Row label="Paid" v={formatNGN(order.paid_amount_ngn)} />
               <Row label="Balance" v={formatNGN(order.balance_amount_ngn)} />
             </dl>
-            {Number(order.balance_amount_ngn) > 0 && (
-              <Button size="sm" variant="outline" className="mt-3 w-full" onClick={markBalancePaid}>
-                Mark balance received
-              </Button>
-            )}
             <p className="mt-3 text-xs text-muted-foreground">Placed {formatDate(order.created_at)}</p>
           </div>
+
+          {Number(order.balance_amount_ngn) > 0 && (
+            <div className="rounded-xl border border-border/60 bg-card/40 p-5 space-y-3">
+              <h3 className="font-semibold">Collect balance</h3>
+              <p className="text-xs text-muted-foreground">Outstanding: {formatNGN(order.balance_amount_ngn)}</p>
+
+              <div className="space-y-2">
+                <Button size="sm" variant="outline" className="w-full" disabled={linkBusy} onClick={sendBalanceLink}>
+                  {linkBusy ? "Generating…" : "Generate Paystack balance link"}
+                </Button>
+                {balanceLink && (
+                  <div className="rounded-md bg-background/60 border border-border/60 p-2 text-[11px] break-all">
+                    <a href={balanceLink} target="_blank" rel="noreferrer" className="text-primary hover:underline">{balanceLink}</a>
+                    <p className="mt-1 text-muted-foreground">Copied to clipboard. Send this to {order.email}.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-2 border-t border-border/60 space-y-2">
+                <Label className="text-xs">Record manual payment</Label>
+                <Input type="number" min="0" placeholder="Amount (₦)" value={manualAmount} onChange={(e) => setManualAmount(e.target.value)} />
+                <select value={manualChannel} onChange={(e) => setManualChannel(e.target.value)}
+                  className="h-9 w-full rounded-md border border-input bg-background px-2 text-sm">
+                  <option value="bank_transfer">Bank transfer</option>
+                  <option value="cash">Cash</option>
+                  <option value="pos">POS</option>
+                  <option value="cheque">Cheque</option>
+                  <option value="manual">Other</option>
+                </select>
+                <Input placeholder="Reference (optional)" value={manualRef} onChange={(e) => setManualRef(e.target.value)} />
+                <Button size="sm" className="w-full" disabled={manualBusy} onClick={recordManual}>
+                  {manualBusy ? "Recording…" : "Record payment"}
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="rounded-xl border border-border/60 bg-card/40 p-5 space-y-3">
             <h3 className="font-semibold">Update</h3>

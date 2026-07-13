@@ -44,7 +44,6 @@ export const createOrderAndInitPayment = createServerFn({ method: "POST" })
     const productMap = new Map(products.map((p) => [p.id, p]));
 
     let subtotal = 0;
-    let depositTotal = 0;
     const orderItemsPayload: Array<{
       product_id: string; name_snapshot: string; sku_snapshot: string | null;
       image_snapshot: string | null; unit_price_ngn: number; quantity: number;
@@ -59,7 +58,6 @@ export const createOrderAndInitPayment = createServerFn({ method: "POST" })
       }
       const line = Number(p.price_ngn) * item.quantity;
       subtotal += line;
-      depositTotal += (line * p.deposit_percent) / 100;
       orderItemsPayload.push({
         product_id: p.id,
         name_snapshot: p.name,
@@ -74,14 +72,19 @@ export const createOrderAndInitPayment = createServerFn({ method: "POST" })
 
     // Shipping (flat, from settings, ignored for subscription-only orders)
     const anyPhysical = orderItemsPayload.some((i) => !i.is_subscription);
+    const hasSubscription = orderItemsPayload.some((i) => i.is_subscription);
     const { data: shipSetting } = await supabase
       .from("site_settings").select("value").eq("key", "shipping_flat_ngn").maybeSingle();
     const shipping = anyPhysical ? Number(shipSetting?.value ?? 5000) : 0;
     const total = Math.round(subtotal + shipping);
-    const deposit = Math.round(depositTotal);
+
+    // Fixed site-wide 80/20 split. Subscriptions must be paid in full.
+    const DEPOSIT_RATIO = 0.8;
+    const mode = hasSubscription ? "full" : data.payment_mode;
+    const deposit = mode === "deposit" ? Math.round(total * DEPOSIT_RATIO) : total;
     const balance = Math.max(0, total - deposit);
 
-    const payNow = data.payment_mode === "full" ? total : deposit;
+    const payNow = mode === "full" ? total : deposit;
     if (payNow <= 0) throw new Error("Payment amount is zero");
 
     // Create order
@@ -122,7 +125,7 @@ export const createOrderAndInitPayment = createServerFn({ method: "POST" })
       metadata: {
         order_id: order.id,
         order_number: order.order_number,
-        kind: data.payment_mode === "full" ? "full" : "deposit",
+        kind: mode === "full" ? "full" : "deposit",
       },
     });
 
@@ -132,7 +135,7 @@ export const createOrderAndInitPayment = createServerFn({ method: "POST" })
       user_id: userId,
       provider: "paystack",
       provider_reference: reference,
-      kind: data.payment_mode === "full" ? "full" : "deposit",
+      kind: mode === "full" ? "full" : "deposit",
       amount_ngn: payNow,
       status: "pending",
     });
