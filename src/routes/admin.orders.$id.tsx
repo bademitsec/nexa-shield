@@ -82,18 +82,54 @@ function AdminOrderDetail() {
     else toast.success("Order updated");
   };
 
-  const markBalancePaid = async () => {
-    const paid = Number(order.total_ngn);
-    const { error } = await supabase.from("orders").update({
-      paid_amount_ngn: paid,
-      balance_amount_ngn: 0,
-      payment_status: "fully_paid",
-    }).eq("id", order.id);
-    if (error) return toast.error(error.message);
-    setOrder({ ...order, paid_amount_ngn: paid, balance_amount_ngn: 0, payment_status: "fully_paid" });
-    setPayment("fully_paid");
-    toast.success("Balance marked paid");
+  const sendBalanceLink = async () => {
+    if (!order) return;
+    setLinkBusy(true);
+    setBalanceLink(null);
+    try {
+      const res = await createLinkFn({ data: { orderId: order.id, origin: window.location.origin } });
+      if (res.authorization_url) {
+        setBalanceLink(res.authorization_url);
+        try { await navigator.clipboard.writeText(res.authorization_url); } catch { /* ignore */ }
+        toast.success("Balance payment link ready — copied to clipboard");
+      } else {
+        toast.error("Paystack did not return a link");
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to create link");
+    } finally {
+      setLinkBusy(false);
+    }
   };
+
+  const recordManual = async () => {
+    if (!order) return;
+    const amt = Number(manualAmount);
+    if (!amt || amt <= 0) return toast.error("Enter a valid amount");
+    setManualBusy(true);
+    try {
+      const res = await recordManualFn({ data: {
+        orderId: order.id,
+        amount_ngn: amt,
+        kind: "balance",
+        channel: manualChannel || "manual",
+        reference: manualRef || undefined,
+      } });
+      setOrder({ ...order, paid_amount_ngn: res.paid_amount_ngn, balance_amount_ngn: res.balance_amount_ngn, payment_status: res.payment_status });
+      setPayment(res.payment_status);
+      setManualAmount("");
+      setManualRef("");
+      toast.success("Manual payment recorded");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to record payment");
+    } finally {
+      setManualBusy(false);
+    }
+  };
+
+  const paymentType: "Full" | "Deposit (80/20)" =
+    Number(order.deposit_amount_ngn) > 0 && Number(order.deposit_amount_ngn) < Number(order.total_ngn)
+      ? "Deposit (80/20)" : "Full";
 
   const addr = order.shipping_address || {};
 
