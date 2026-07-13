@@ -40,6 +40,14 @@ function AdminOrderDetail() {
   const [tracking, setTracking] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
   const [saving, setSaving] = useState(false);
+  const [manualAmount, setManualAmount] = useState<string>("");
+  const [manualChannel, setManualChannel] = useState<string>("bank_transfer");
+  const [manualRef, setManualRef] = useState<string>("");
+  const [manualBusy, setManualBusy] = useState(false);
+  const [linkBusy, setLinkBusy] = useState(false);
+  const [balanceLink, setBalanceLink] = useState<string | null>(null);
+  const createLinkFn = useServerFn(adminCreateBalanceLink);
+  const recordManualFn = useServerFn(adminRecordManualPayment);
 
   useEffect(() => {
     (async () => {
