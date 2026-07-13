@@ -16,11 +16,11 @@ import { site, services } from "@/lib/site-config";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: `${site.name} — Web Design, Marketing & Home Security in Nigeria` },
+      { title: `${site.name} — Web Design, Marketing & Home Security in Africa` },
       {
         name: "description",
         content:
-          "One partner for fast websites, digital marketing that ranks, and professionally installed CCTV, alarms & smart-home security across Nigeria.",
+          "One partner for fast websites, digital marketing that ranks, and professionally installed CCTV, alarms & smart-home security across Africa.",
       },
     ],
   }),
@@ -44,7 +44,7 @@ function HomePage() {
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-accent" />
-              Nigerian-owned · Serving homes & businesses nationwide
+              Serving homes & businesses Across Africa
             </span>
             <h1 className="mt-6 text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
               Build online.{" "}
@@ -54,7 +54,7 @@ function HomePage() {
             <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground md:text-lg">
               {site.name} is your one partner for high-performing websites,
               digital marketing that ranks, and professionally installed CCTV,
-              alarms and smart-home security across Nigeria.
+              alarms and smart-home security across Africa.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
