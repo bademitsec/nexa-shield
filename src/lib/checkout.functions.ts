@@ -125,7 +125,7 @@ export const createOrderAndInitPayment = createServerFn({ method: "POST" })
       metadata: {
         order_id: order.id,
         order_number: order.order_number,
-        kind: data.payment_mode === "full" ? "full" : "deposit",
+        kind: mode === "full" ? "full" : "deposit",
       },
     });
 
@@ -135,7 +135,7 @@ export const createOrderAndInitPayment = createServerFn({ method: "POST" })
       user_id: userId,
       provider: "paystack",
       provider_reference: reference,
-      kind: data.payment_mode === "full" ? "full" : "deposit",
+      kind: mode === "full" ? "full" : "deposit",
       amount_ngn: payNow,
       status: "pending",
     });
