@@ -155,25 +155,11 @@ function CheckoutPage() {
             <Textarea {...form.register("customer_notes")} rows={3} placeholder="Access instructions, preferred install date, etc." />
           </Section>
 
-          {canDeposit && (
-            <Section title="Payment option">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <PayOption active={mode === "deposit"} onClick={() => setMode("deposit")}
-                  title="Pay 80% deposit"
-                  subtitle={`Pay ₦${depositAmount.toLocaleString()} now, ₦${balanceAmount.toLocaleString()} on delivery/install.`} />
-                <PayOption active={mode === "full"} onClick={() => setMode("full")}
-                  title="Pay in full"
-                  subtitle={`Pay ₦${cart.subtotalNgn.toLocaleString()} today. No balance due.`} />
-              </div>
-              {hasSubscription && (
-                <p className="mt-2 text-xs text-muted-foreground">Subscriptions are billed in full.</p>
-              )}
-            </Section>
-          )}
-          {hasSubscription && !canDeposit && (
+          {hasSubscription && (
             <p className="text-xs text-muted-foreground">Subscription orders are paid in full at checkout.</p>
           )}
         </div>
+
 
         <aside className="rounded-xl border border-border/60 bg-card/50 p-6 h-fit sticky top-20">
           <h2 className="font-semibold">Order summary</h2>
