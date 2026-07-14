@@ -208,12 +208,3 @@ function Field({ label, error, children }: { label: string; error?: string; chil
     </div>
   );
 }
-function PayOption({ active, onClick, title, subtitle }: { active: boolean; onClick: () => void; title: string; subtitle: string }) {
-  return (
-    <button type="button" onClick={onClick}
-      className={`text-left rounded-lg border p-4 transition ${active ? "border-primary bg-primary/5" : "border-border/60 hover:border-border"}`}>
-      <div className="font-medium text-sm">{title}</div>
-      <div className="mt-1 text-xs text-muted-foreground">{subtitle}</div>
-    </button>
-  );
-}
