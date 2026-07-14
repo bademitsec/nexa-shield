@@ -37,13 +37,13 @@ function CheckoutPage() {
   const router = useRouter();
   const cart = useCart();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
-  const [mode, setMode] = useState<"full" | "deposit">("deposit");
   const [submitting, setSubmitting] = useState(false);
   const initFn = useServerFn(createOrderAndInitPayment);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
   }, []);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
