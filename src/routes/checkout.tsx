@@ -95,7 +95,7 @@ function CheckoutPage() {
             country: v.country || "",
           },
           customer_notes: v.customer_notes || "",
-          payment_mode: mode,
+          payment_mode: "full",
           origin: window.location.origin,
         },
       });
