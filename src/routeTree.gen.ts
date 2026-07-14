@@ -39,6 +39,7 @@ import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
 import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
+import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api.public.paystack.webhook'
 
 const TrainingRoute = TrainingRouteImport.update({
@@ -192,6 +193,12 @@ const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => AdminOrdersRoute,
 } as any)
+const LovableEmailQueueProcessRoute =
+  LovableEmailQueueProcessRouteImport.update({
+    id: '/lovable/email/queue/process',
+    path: '/lovable/email/queue/process',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicPaystackWebhookRoute =
   ApiPublicPaystackWebhookRouteImport.update({
     id: '/api/public/paystack/webhook',
@@ -231,6 +238,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -263,6 +271,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -297,6 +306,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
+  '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -332,6 +342,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
+    | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -364,6 +375,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
+    | '/lovable/email/queue/process'
   id:
     | '__root__'
     | '/'
@@ -397,6 +409,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
+    | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -417,6 +430,7 @@ export interface RootRouteChildren {
   ServicesHomeSecurityRoute: typeof ServicesHomeSecurityRoute
   ServicesWebDesignRoute: typeof ServicesWebDesignRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
+  LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -631,6 +645,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersIdRouteImport
       parentRoute: typeof AdminOrdersRoute
     }
+    '/lovable/email/queue/process': {
+      id: '/lovable/email/queue/process'
+      path: '/lovable/email/queue/process'
+      fullPath: '/lovable/email/queue/process'
+      preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/paystack/webhook': {
       id: '/api/public/paystack/webhook'
       path: '/api/public/paystack/webhook'
@@ -740,17 +761,8 @@ const rootRouteChildren: RootRouteChildren = {
   ServicesHomeSecurityRoute: ServicesHomeSecurityRoute,
   ServicesWebDesignRoute: ServicesWebDesignRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
+  LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
