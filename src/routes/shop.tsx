@@ -187,11 +187,6 @@ function ShopPage() {
                       <span className="text-xs text-muted-foreground">/ {p.subscription_interval}</span>
                     )}
                   </div>
-                  {!p.is_subscription && p.deposit_percent < 100 && (
-                    <p className="mt-1 text-[11px] text-muted-foreground">
-                      {p.deposit_percent}% deposit available
-                    </p>
-                  )}
                   <div className="mt-auto pt-4 flex gap-2">
                     <Button size="sm" variant="outline" className="flex-1">View details</Button>
                     <Button
