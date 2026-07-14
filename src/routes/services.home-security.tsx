@@ -38,7 +38,7 @@ function HomeSecurityPage() {
         "Hardware supply — genuine brands, 12-month warranty",
         "Professional cabling & installation",
         "Mobile app setup & training",
-        "60% deposit, balance on completion",
+        "Full payment at checkout — secured via Paystack",
         "Optional monthly cloud monitoring plan",
       ]}
       packages={[
