@@ -11,7 +11,7 @@ export const Route = createFileRoute("/cart")({
 });
 
 function CartPage() {
-  const { items, remove, setQty, subtotalNgn, depositNgn } = useCart();
+  const { items, remove, setQty, subtotalNgn } = useCart();
 
   if (items.length === 0) {
     return (
@@ -66,9 +66,8 @@ function CartPage() {
           <h2 className="font-semibold">Order summary</h2>
           <div className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><Price ngn={subtotalNgn} /></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Deposit due</span><Price ngn={depositNgn} className="font-medium" /></div>
-            <div className="flex justify-between text-xs text-muted-foreground"><span>Balance on delivery</span><Price ngn={subtotalNgn - depositNgn} /></div>
             <div className="text-xs text-muted-foreground">Shipping calculated at checkout.</div>
+
           </div>
           <Button asChild size="lg" className="mt-6 w-full bg-accent text-accent-foreground hover:bg-accent/90">
             <Link to="/checkout">Proceed to checkout</Link>

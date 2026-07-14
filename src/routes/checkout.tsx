@@ -37,13 +37,13 @@ function CheckoutPage() {
   const router = useRouter();
   const cart = useCart();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
-  const [mode, setMode] = useState<"full" | "deposit">("deposit");
   const [submitting, setSubmitting] = useState(false);
   const initFn = useServerFn(createOrderAndInitPayment);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
   }, []);
+
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -76,10 +76,7 @@ function CheckoutPage() {
   }
 
   const hasSubscription = cart.items.some((i) => i.isSubscription);
-  const DEPOSIT_RATIO = 0.8;
-  const depositAmount = Math.round(cart.subtotalNgn * DEPOSIT_RATIO);
-  const balanceAmount = cart.subtotalNgn - depositAmount;
-  const canDeposit = !hasSubscription && cart.subtotalNgn > 0;
+
 
   const onSubmit = async (v: FormValues) => {
     setSubmitting(true);
@@ -98,7 +95,7 @@ function CheckoutPage() {
             country: v.country || "",
           },
           customer_notes: v.customer_notes || "",
-          payment_mode: mode,
+          payment_mode: "full",
           origin: window.location.origin,
         },
       });
@@ -158,25 +155,11 @@ function CheckoutPage() {
             <Textarea {...form.register("customer_notes")} rows={3} placeholder="Access instructions, preferred install date, etc." />
           </Section>
 
-          {canDeposit && (
-            <Section title="Payment option">
-              <div className="grid gap-3 sm:grid-cols-2">
-                <PayOption active={mode === "deposit"} onClick={() => setMode("deposit")}
-                  title="Pay 80% deposit"
-                  subtitle={`Pay ₦${depositAmount.toLocaleString()} now, ₦${balanceAmount.toLocaleString()} on delivery/install.`} />
-                <PayOption active={mode === "full"} onClick={() => setMode("full")}
-                  title="Pay in full"
-                  subtitle={`Pay ₦${cart.subtotalNgn.toLocaleString()} today. No balance due.`} />
-              </div>
-              {hasSubscription && (
-                <p className="mt-2 text-xs text-muted-foreground">Subscriptions are billed in full.</p>
-              )}
-            </Section>
-          )}
-          {hasSubscription && !canDeposit && (
+          {hasSubscription && (
             <p className="text-xs text-muted-foreground">Subscription orders are paid in full at checkout.</p>
           )}
         </div>
+
 
         <aside className="rounded-xl border border-border/60 bg-card/50 p-6 h-fit sticky top-20">
           <h2 className="font-semibold">Order summary</h2>
@@ -190,14 +173,12 @@ function CheckoutPage() {
           </div>
           <div className="mt-4 space-y-2 text-sm border-t border-border/60 pt-4">
             <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><Price ngn={cart.subtotalNgn} /></div>
-            {mode === "deposit" && canDeposit && (
-              <div className="flex justify-between"><span className="text-muted-foreground">Balance later</span><Price ngn={balanceAmount} /></div>
-            )}
             <div className="flex justify-between font-semibold pt-2 border-t border-border/60">
               <span>You pay now</span>
-              <Price ngn={mode === "full" || !canDeposit ? cart.subtotalNgn : depositAmount} />
+              <Price ngn={cart.subtotalNgn} />
             </div>
           </div>
+
           <Button type="submit" disabled={submitting} size="lg" className="mt-6 w-full bg-accent text-accent-foreground hover:bg-accent/90">
             {submitting ? "Redirecting to Paystack…" : "Pay with Paystack"}
           </Button>
@@ -225,14 +206,5 @@ function Field({ label, error, children }: { label: string; error?: string; chil
       {children}
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
-  );
-}
-function PayOption({ active, onClick, title, subtitle }: { active: boolean; onClick: () => void; title: string; subtitle: string }) {
-  return (
-    <button type="button" onClick={onClick}
-      className={`text-left rounded-lg border p-4 transition ${active ? "border-primary bg-primary/5" : "border-border/60 hover:border-border"}`}>
-      <div className="font-medium text-sm">{title}</div>
-      <div className="mt-1 text-xs text-muted-foreground">{subtitle}</div>
-    </button>
   );
 }
