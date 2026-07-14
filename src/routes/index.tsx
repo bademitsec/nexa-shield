@@ -126,7 +126,7 @@ function HomePage() {
               <ul className="mt-6 space-y-2.5 text-sm">
                 {[
                   "Free on-site survey in Lagos, Abuja & Port Harcourt",
-                  "Pay 60% deposit, balance on install",
+                  "Full payment at checkout — secured via Paystack",
                   "Genuine hardware — 12-month warranty",
                   "Mobile app alerts & cloud recording",
                 ].map((f) => (
