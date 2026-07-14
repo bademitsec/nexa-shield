@@ -76,10 +76,7 @@ function CheckoutPage() {
   }
 
   const hasSubscription = cart.items.some((i) => i.isSubscription);
-  const DEPOSIT_RATIO = 0.8;
-  const depositAmount = Math.round(cart.subtotalNgn * DEPOSIT_RATIO);
-  const balanceAmount = cart.subtotalNgn - depositAmount;
-  const canDeposit = !hasSubscription && cart.subtotalNgn > 0;
+
 
   const onSubmit = async (v: FormValues) => {
     setSubmitting(true);
