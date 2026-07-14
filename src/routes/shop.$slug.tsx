@@ -121,11 +121,8 @@ function ProductPage() {
             )}
           </div>
 
-          {!product.is_subscription && product.deposit_percent < 100 && (
-            <p className="mt-2 text-sm text-accent">
-              Pay {product.deposit_percent}% deposit online, balance on delivery/install.
-            </p>
-          )}
+
+
 
           {product.description && (
             <p className="mt-6 text-sm leading-relaxed text-muted-foreground whitespace-pre-line">
