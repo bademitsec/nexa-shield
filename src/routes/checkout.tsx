@@ -173,14 +173,12 @@ function CheckoutPage() {
           </div>
           <div className="mt-4 space-y-2 text-sm border-t border-border/60 pt-4">
             <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><Price ngn={cart.subtotalNgn} /></div>
-            {mode === "deposit" && canDeposit && (
-              <div className="flex justify-between"><span className="text-muted-foreground">Balance later</span><Price ngn={balanceAmount} /></div>
-            )}
             <div className="flex justify-between font-semibold pt-2 border-t border-border/60">
               <span>You pay now</span>
-              <Price ngn={mode === "full" || !canDeposit ? cart.subtotalNgn : depositAmount} />
+              <Price ngn={cart.subtotalNgn} />
             </div>
           </div>
+
           <Button type="submit" disabled={submitting} size="lg" className="mt-6 w-full bg-accent text-accent-foreground hover:bg-accent/90">
             {submitting ? "Redirecting to Paystack…" : "Pay with Paystack"}
           </Button>
