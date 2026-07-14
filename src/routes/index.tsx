@@ -53,8 +53,8 @@ function HomePage() {
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground md:text-lg">
               {site.name} is your one partner for high-performing websites,
-              digital marketing that ranks, and professionally installed CCTV,
-              alarms and smart-home security across Africa.
+              digital marketing that ranks, and trusted CCTV, alarms, and
+              smart-home security solutions across Africa.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
