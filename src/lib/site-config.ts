@@ -3,11 +3,16 @@ export const site = {
   tagline: "Web. Marketing. Security.",
   description:
     "Webfortix builds fast websites, growth-driven digital marketing, and installs smart home security systems across Africa.",
-  url: "https://webfortix.ng",
-  whatsapp: "2348000000000", // digits only, E.164 without +
-  email: "hello@webfortix.ng",
-  phone: "+234 800 000 0000",
+  url: "https://webfortix.com",
+  whatsapp: "2348139511908", // digits only, E.164 without +
+  email: "support@webfortix.com",
+  phone: "+234 813 951 1908",
   address: "Lagos",
+  social: {
+    instagram: "https://instagram.com/webfortix",
+    x: "https://x.com/webfortix",
+    facebook: "https://facebook.com/webfortix",
+  },
 };
 
 export const services = [
