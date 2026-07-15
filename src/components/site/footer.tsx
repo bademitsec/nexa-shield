@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Shield, Mail, Phone } from "lucide-react";
+import { Shield, Mail, Phone, Instagram, Facebook, Twitter } from "lucide-react";
 import { site, services } from "@/lib/site-config";
 
 export function SiteFooter() {
@@ -21,6 +21,35 @@ export function SiteFooter() {
               <p className="flex items-center gap-2"><Mail className="h-4 w-4" />{site.email}</p>
               <p className="flex items-center gap-2"><Phone className="h-4 w-4" />{site.phone}</p>
               <p>{site.address}</p>
+            </div>
+            <div className="mt-5 flex items-center gap-3">
+              <a
+                href={site.social.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="grid h-9 w-9 place-items-center rounded-full bg-background ring-1 ring-border text-muted-foreground transition-colors hover:text-foreground hover:ring-primary/40"
+              >
+                <Instagram className="h-4 w-4" />
+              </a>
+              <a
+                href={site.social.x}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="X (Twitter)"
+                className="grid h-9 w-9 place-items-center rounded-full bg-background ring-1 ring-border text-muted-foreground transition-colors hover:text-foreground hover:ring-primary/40"
+              >
+                <Twitter className="h-4 w-4" />
+              </a>
+              <a
+                href={site.social.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="grid h-9 w-9 place-items-center rounded-full bg-background ring-1 ring-border text-muted-foreground transition-colors hover:text-foreground hover:ring-primary/40"
+              >
+                <Facebook className="h-4 w-4" />
+              </a>
             </div>
           </div>
           <div>

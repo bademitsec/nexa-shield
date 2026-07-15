@@ -4,4 +4,4 @@ Disallow: /account
 Disallow: /auth
 Disallow: /admin
 
-Sitemap: https://webfortix.ng/sitemap.xml
+Sitemap: https://webfortix.com/sitemap.xml
