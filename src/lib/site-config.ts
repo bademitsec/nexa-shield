@@ -7,7 +7,7 @@ export const site = {
   whatsapp: "2348139511908", // digits only, E.164 without +
   email: "support@webfortix.com",
   phone: "+234 813 951 1908",
-  address: "Lagos",
+  address: "Nigeria",
   social: {
     instagram: "https://instagram.com/webfortix",
     x: "https://x.com/webfortix",
