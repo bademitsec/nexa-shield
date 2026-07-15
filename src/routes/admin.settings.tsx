@@ -30,7 +30,7 @@ const PROVIDER_KEYS: Record<Provider, Array<{ name: string; label: string; place
   ],
   resend: [
     { name: "api_key", label: "API key", placeholder: "re_…", kind: "password" },
-    { name: "from_email", label: "From email", placeholder: "no-reply@webfortix.com.ng", kind: "text" },
+    { name: "from_email", label: "From email", placeholder: "no-reply@webfortix.com", kind: "text" },
   ],
   zoom: [
     { name: "account_id", label: "Account ID", kind: "text" },
