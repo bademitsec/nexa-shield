@@ -31,6 +31,8 @@ function AdminProducts() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [creating, setCreating] = useState(false);
   const [catDialog, setCatDialog] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [catFilter, setCatFilter] = useState<string>("all");
 
   const load = async () => {
     const [p, c] = await Promise.all([
@@ -48,6 +50,24 @@ function AdminProducts() {
     if (error) toast.error(error.message); else { toast.success("Deleted"); load(); }
   };
 
+  const toggleActive = async (p: Product) => {
+    const { error } = await supabase.from("products").update({ is_active: !p.is_active }).eq("id", p.id);
+    if (error) toast.error(error.message);
+    else { toast.success(!p.is_active ? "Activated" : "Deactivated"); load(); }
+  };
+
+  const visible = products.filter((p) => {
+    if (statusFilter === "active" && !p.is_active) return false;
+    if (statusFilter === "inactive" && p.is_active) return false;
+    if (catFilter !== "all" && p.category_id !== catFilter) return false;
+    return true;
+  });
+  const counts = {
+    all: products.length,
+    active: products.filter((p) => p.is_active).length,
+    inactive: products.filter((p) => !p.is_active).length,
+  };
+
   return (
     <>
       <AdminHeader title="Products" actions={
@@ -56,6 +76,30 @@ function AdminProducts() {
           <Button size="sm" onClick={() => setCreating(true)}><Plus className="h-3.5 w-3.5 mr-1" />New product</Button>
         </>
       } />
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        {(["all","active","inactive"] as const).map((s) => (
+          <button
+            key={s}
+            onClick={() => setStatusFilter(s)}
+            className={`rounded-full border px-3 py-1.5 text-xs font-medium capitalize transition ${
+              statusFilter === s ? "border-primary bg-primary/10 text-primary" : "border-border/60 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {s} ({counts[s]})
+          </button>
+        ))}
+        <div className="ml-auto">
+          <select
+            value={catFilter}
+            onChange={(e) => setCatFilter(e.target.value)}
+            className="h-8 rounded-md border border-input bg-background px-2 text-xs"
+          >
+            <option value="all">All categories</option>
+            {cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+          </select>
+        </div>
+      </div>
+
       <div className="rounded-xl border border-border/60 bg-card/40 overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="border-b border-border/60 text-xs uppercase text-muted-foreground">
