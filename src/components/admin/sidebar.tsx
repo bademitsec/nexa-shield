@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
   LayoutDashboard, ShoppingCart, Package, Users, FileText,
-  Repeat, Newspaper, Mail, Settings as SettingsIcon, MessageSquare,
+  Repeat, Newspaper, Mail, Settings as SettingsIcon, MessageSquare, Briefcase,
 } from "lucide-react";
 
 const items: Array<{ to: string; label: string; icon: React.ElementType; exact?: boolean }> = [
@@ -10,6 +10,7 @@ const items: Array<{ to: string; label: string; icon: React.ElementType; exact?:
   { to: "/admin/products", label: "Products", icon: Package },
   { to: "/admin/customers", label: "Customers", icon: Users },
   { to: "/admin/quotes", label: "Quotes", icon: MessageSquare },
+  { to: "/admin/applications", label: "Applications", icon: Briefcase },
   { to: "/admin/subscriptions", label: "Subscriptions", icon: Repeat },
   { to: "/admin/content", label: "Content", icon: Newspaper },
   { to: "/admin/campaigns", label: "Campaigns", icon: Mail },
