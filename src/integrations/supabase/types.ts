@@ -311,6 +311,125 @@ export type Database = {
           },
         ]
       }
+      job_applications: {
+        Row: {
+          admin_notes: string | null
+          country: string
+          country_other: string | null
+          cover_letter: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          phone: string | null
+          portfolio_url: string | null
+          resume_url: string | null
+          status: Database["public"]["Enums"]["job_application_status"]
+          updated_at: string
+          vacancy_id: string | null
+          vacancy_slug: string | null
+          vacancy_title: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          country: string
+          country_other?: string | null
+          cover_letter: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          phone?: string | null
+          portfolio_url?: string | null
+          resume_url?: string | null
+          status?: Database["public"]["Enums"]["job_application_status"]
+          updated_at?: string
+          vacancy_id?: string | null
+          vacancy_slug?: string | null
+          vacancy_title: string
+        }
+        Update: {
+          admin_notes?: string | null
+          country?: string
+          country_other?: string | null
+          cover_letter?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          phone?: string | null
+          portfolio_url?: string | null
+          resume_url?: string | null
+          status?: Database["public"]["Enums"]["job_application_status"]
+          updated_at?: string
+          vacancy_id?: string | null
+          vacancy_slug?: string | null
+          vacancy_title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "job_applications_vacancy_id_fkey"
+            columns: ["vacancy_id"]
+            isOneToOne: false
+            referencedRelation: "job_vacancies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      job_vacancies: {
+        Row: {
+          created_at: string
+          department: string
+          description: string
+          employment_type: string
+          id: string
+          is_active: boolean
+          location: string
+          posted_at: string
+          requirements: string[]
+          responsibilities: string[]
+          short_description: string
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          department: string
+          description?: string
+          employment_type?: string
+          id?: string
+          is_active?: boolean
+          location?: string
+          posted_at?: string
+          requirements?: string[]
+          responsibilities?: string[]
+          short_description: string
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          description?: string
+          employment_type?: string
+          id?: string
+          is_active?: boolean
+          location?: string
+          posted_at?: string
+          requirements?: string[]
+          responsibilities?: string[]
+          short_description?: string
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -884,6 +1003,7 @@ export type Database = {
         Args: { payload: Json; queue_name: string }
         Returns: number
       }
+      is_staff: { Args: { _user_id: string }; Returns: boolean }
       move_to_dlq: {
         Args: {
           dlq_name: string
@@ -910,6 +1030,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "staff" | "customer"
+      job_application_status:
+        | "new"
+        | "reviewing"
+        | "shortlisted"
+        | "rejected"
+        | "hired"
       order_status:
         | "pending"
         | "confirmed"
@@ -1067,6 +1193,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "staff", "customer"],
+      job_application_status: [
+        "new",
+        "reviewing",
+        "shortlisted",
+        "rejected",
+        "hired",
+      ],
       order_status: [
         "pending",
         "confirmed",
