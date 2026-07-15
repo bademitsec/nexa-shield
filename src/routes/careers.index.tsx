@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { site } from "@/lib/site-config";
 import { CAREERS_LOCATION_LABEL } from "@/lib/careers-countries";
 
-export const Route = createFileRoute("/careers")({
+export const Route = createFileRoute("/careers/")({
   head: () => ({
     meta: [
       { title: "Careers — Join the Webfortix Team" },

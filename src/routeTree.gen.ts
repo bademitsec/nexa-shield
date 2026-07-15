@@ -16,12 +16,12 @@ import { Route as OrdersRouteImport } from './routes/orders'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
-import { Route as CareersRouteImport } from './routes/careers'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CareersIndexRouteImport } from './routes/careers.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
 import { Route as ServicesWebDesignRouteImport } from './routes/services.web-design'
@@ -79,11 +79,6 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CareersRoute = CareersRouteImport.update({
-  id: '/careers',
-  path: '/careers',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
@@ -107,6 +102,11 @@ const AccountRoute = AccountRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersIndexRoute = CareersIndexRouteImport.update({
+  id: '/careers/',
+  path: '/careers/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -146,9 +146,9 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
   getParentRoute: () => OrdersRoute,
 } as any)
 const CareersSlugRoute = CareersSlugRouteImport.update({
-  id: '/$slug',
-  path: '/$slug',
-  getParentRoute: () => CareersRoute,
+  id: '/careers/$slug',
+  path: '/careers/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
@@ -224,7 +224,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
-  '/careers': typeof CareersRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -250,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/services/web-design': typeof ServicesWebDesignRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/careers/': typeof CareersIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -259,7 +259,6 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
-  '/careers': typeof CareersRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -285,6 +284,7 @@ export interface FileRoutesByTo {
   '/services/web-design': typeof ServicesWebDesignRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/careers': typeof CareersIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -296,7 +296,6 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
-  '/careers': typeof CareersRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -322,6 +321,7 @@ export interface FileRoutesById {
   '/services/web-design': typeof ServicesWebDesignRoute
   '/shop/$slug': typeof ShopSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/careers/': typeof CareersIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -334,7 +334,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/blog'
-    | '/careers'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -360,6 +359,7 @@ export interface FileRouteTypes {
     | '/services/web-design'
     | '/shop/$slug'
     | '/admin/'
+    | '/careers/'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
     | '/lovable/email/queue/process'
@@ -369,7 +369,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/blog'
-    | '/careers'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -395,6 +394,7 @@ export interface FileRouteTypes {
     | '/services/web-design'
     | '/shop/$slug'
     | '/admin'
+    | '/careers'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
     | '/lovable/email/queue/process'
@@ -405,7 +405,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/blog'
-    | '/careers'
     | '/cart'
     | '/checkout'
     | '/contact'
@@ -431,6 +430,7 @@ export interface FileRouteTypes {
     | '/services/web-design'
     | '/shop/$slug'
     | '/admin/'
+    | '/careers/'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
     | '/lovable/email/queue/process'
@@ -442,7 +442,6 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRouteWithChildren
-  CareersRoute: typeof CareersRouteWithChildren
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
@@ -450,9 +449,11 @@ export interface RootRouteChildren {
   PortfolioRoute: typeof PortfolioRouteWithChildren
   ShopRoute: typeof ShopRouteWithChildren
   TrainingRoute: typeof TrainingRoute
+  CareersSlugRoute: typeof CareersSlugRoute
   ServicesDigitalMarketingRoute: typeof ServicesDigitalMarketingRoute
   ServicesHomeSecurityRoute: typeof ServicesHomeSecurityRoute
   ServicesWebDesignRoute: typeof ServicesWebDesignRoute
+  CareersIndexRoute: typeof CareersIndexRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
@@ -508,13 +509,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/careers': {
-      id: '/careers'
-      path: '/careers'
-      fullPath: '/careers'
-      preLoaderRoute: typeof CareersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/blog': {
       id: '/blog'
       path: '/blog'
@@ -548,6 +542,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers/': {
+      id: '/careers/'
+      path: '/careers'
+      fullPath: '/careers/'
+      preLoaderRoute: typeof CareersIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -601,10 +602,10 @@ declare module '@tanstack/react-router' {
     }
     '/careers/$slug': {
       id: '/careers/$slug'
-      path: '/$slug'
+      path: '/careers/$slug'
       fullPath: '/careers/$slug'
       preLoaderRoute: typeof CareersSlugRouteImport
-      parentRoute: typeof CareersRoute
+      parentRoute: typeof rootRouteImport
     }
     '/blog/$slug': {
       id: '/blog/$slug'
@@ -750,17 +751,6 @@ const BlogRouteChildren: BlogRouteChildren = {
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
-interface CareersRouteChildren {
-  CareersSlugRoute: typeof CareersSlugRoute
-}
-
-const CareersRouteChildren: CareersRouteChildren = {
-  CareersSlugRoute: CareersSlugRoute,
-}
-
-const CareersRouteWithChildren =
-  CareersRoute._addFileChildren(CareersRouteChildren)
-
 interface OrdersRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
 }
@@ -800,7 +790,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   BlogRoute: BlogRouteWithChildren,
-  CareersRoute: CareersRouteWithChildren,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
@@ -808,22 +797,14 @@ const rootRouteChildren: RootRouteChildren = {
   PortfolioRoute: PortfolioRouteWithChildren,
   ShopRoute: ShopRouteWithChildren,
   TrainingRoute: TrainingRoute,
+  CareersSlugRoute: CareersSlugRoute,
   ServicesDigitalMarketingRoute: ServicesDigitalMarketingRoute,
   ServicesHomeSecurityRoute: ServicesHomeSecurityRoute,
   ServicesWebDesignRoute: ServicesWebDesignRoute,
+  CareersIndexRoute: CareersIndexRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
