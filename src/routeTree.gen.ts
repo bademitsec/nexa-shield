@@ -29,6 +29,7 @@ import { Route as ServicesHomeSecurityRouteImport } from './routes/services.home
 import { Route as ServicesDigitalMarketingRouteImport } from './routes/services.digital-marketing'
 import { Route as PortfolioSlugRouteImport } from './routes/portfolio.$slug'
 import { Route as OrdersIdRouteImport } from './routes/orders.$id'
+import { Route as CareersSlugRouteImport } from './routes/careers.$slug'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminSubscriptionsRouteImport } from './routes/admin.subscriptions'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
@@ -38,6 +39,7 @@ import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminCampaignsRouteImport } from './routes/admin.campaigns'
+import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api.public.paystack.webhook'
@@ -143,6 +145,11 @@ const OrdersIdRoute = OrdersIdRouteImport.update({
   path: '/$id',
   getParentRoute: () => OrdersRoute,
 } as any)
+const CareersSlugRoute = CareersSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CareersRoute,
+} as any)
 const BlogSlugRoute = BlogSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -188,6 +195,11 @@ const AdminCampaignsRoute = AdminCampaignsRouteImport.update({
   path: '/campaigns',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersIdRoute = AdminOrdersIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -212,7 +224,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
-  '/careers': typeof CareersRoute
+  '/careers': typeof CareersRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -220,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
   '/training': typeof TrainingRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -229,6 +242,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/orders/$id': typeof OrdersIdRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
@@ -245,7 +259,7 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
-  '/careers': typeof CareersRoute
+  '/careers': typeof CareersRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -253,6 +267,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
   '/training': typeof TrainingRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -262,6 +277,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/orders/$id': typeof OrdersIdRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
@@ -280,7 +296,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/blog': typeof BlogRouteWithChildren
-  '/careers': typeof CareersRoute
+  '/careers': typeof CareersRouteWithChildren
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/contact': typeof ContactRoute
@@ -288,6 +304,7 @@ export interface FileRoutesById {
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
   '/training': typeof TrainingRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/customers': typeof AdminCustomersRoute
@@ -297,6 +314,7 @@ export interface FileRoutesById {
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/subscriptions': typeof AdminSubscriptionsRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/orders/$id': typeof OrdersIdRoute
   '/portfolio/$slug': typeof PortfolioSlugRoute
   '/services/digital-marketing': typeof ServicesDigitalMarketingRoute
@@ -324,6 +342,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/shop'
     | '/training'
+    | '/admin/applications'
     | '/admin/campaigns'
     | '/admin/content'
     | '/admin/customers'
@@ -333,6 +352,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/subscriptions'
     | '/blog/$slug'
+    | '/careers/$slug'
     | '/orders/$id'
     | '/portfolio/$slug'
     | '/services/digital-marketing'
@@ -357,6 +377,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/shop'
     | '/training'
+    | '/admin/applications'
     | '/admin/campaigns'
     | '/admin/content'
     | '/admin/customers'
@@ -366,6 +387,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/subscriptions'
     | '/blog/$slug'
+    | '/careers/$slug'
     | '/orders/$id'
     | '/portfolio/$slug'
     | '/services/digital-marketing'
@@ -391,6 +413,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/shop'
     | '/training'
+    | '/admin/applications'
     | '/admin/campaigns'
     | '/admin/content'
     | '/admin/customers'
@@ -400,6 +423,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/subscriptions'
     | '/blog/$slug'
+    | '/careers/$slug'
     | '/orders/$id'
     | '/portfolio/$slug'
     | '/services/digital-marketing'
@@ -418,7 +442,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   BlogRoute: typeof BlogRouteWithChildren
-  CareersRoute: typeof CareersRoute
+  CareersRoute: typeof CareersRouteWithChildren
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   ContactRoute: typeof ContactRoute
@@ -575,6 +599,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrdersIdRouteImport
       parentRoute: typeof OrdersRoute
     }
+    '/careers/$slug': {
+      id: '/careers/$slug'
+      path: '/$slug'
+      fullPath: '/careers/$slug'
+      preLoaderRoute: typeof CareersSlugRouteImport
+      parentRoute: typeof CareersRoute
+    }
     '/blog/$slug': {
       id: '/blog/$slug'
       path: '/$slug'
@@ -638,6 +669,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCampaignsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders/$id': {
       id: '/admin/orders/$id'
       path: '/$id'
@@ -675,6 +713,7 @@ const AdminOrdersRouteWithChildren = AdminOrdersRoute._addFileChildren(
 )
 
 interface AdminRouteChildren {
+  AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminCampaignsRoute: typeof AdminCampaignsRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminCustomersRoute: typeof AdminCustomersRoute
@@ -687,6 +726,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminApplicationsRoute: AdminApplicationsRoute,
   AdminCampaignsRoute: AdminCampaignsRoute,
   AdminContentRoute: AdminContentRoute,
   AdminCustomersRoute: AdminCustomersRoute,
@@ -709,6 +749,17 @@ const BlogRouteChildren: BlogRouteChildren = {
 }
 
 const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
+interface CareersRouteChildren {
+  CareersSlugRoute: typeof CareersSlugRoute
+}
+
+const CareersRouteChildren: CareersRouteChildren = {
+  CareersSlugRoute: CareersSlugRoute,
+}
+
+const CareersRouteWithChildren =
+  CareersRoute._addFileChildren(CareersRouteChildren)
 
 interface OrdersRouteChildren {
   OrdersIdRoute: typeof OrdersIdRoute
@@ -749,7 +800,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   BlogRoute: BlogRouteWithChildren,
-  CareersRoute: CareersRoute,
+  CareersRoute: CareersRouteWithChildren,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   ContactRoute: ContactRoute,
