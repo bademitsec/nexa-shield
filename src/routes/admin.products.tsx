@@ -106,11 +106,11 @@ function AdminProducts() {
             <tr>{["Name","Category","Price","Stock","Status",""].map((h,i) => <th key={i} className="text-left px-4 py-2.5">{h}</th>)}</tr>
           </thead>
           <tbody className="divide-y divide-border/60">
-            {products.map((p) => {
+            {visible.map((p) => {
               const cat = cats.find((c) => c.id === p.category_id);
               const low = !p.is_subscription && p.stock <= p.low_stock_threshold;
               return (
-                <tr key={p.id} className="hover:bg-secondary/40">
+                <tr key={p.id} className={`hover:bg-secondary/40 ${!p.is_active ? "opacity-60" : ""}`}>
                   <td className="px-4 py-3">
                     <div className="font-medium">{p.name}</div>
                     <div className="text-xs text-muted-foreground">{p.sku ?? "—"} · {p.slug}</div>
@@ -119,19 +119,23 @@ function AdminProducts() {
                   <td className="px-4 py-3">{formatNGN(p.price_ngn)}{p.is_subscription ? `/${p.subscription_interval}` : ""}</td>
                   <td className={`px-4 py-3 ${low ? "text-destructive font-medium" : ""}`}>{p.is_subscription ? "—" : p.stock}</td>
                   <td className="px-4 py-3 text-xs">
-                    {p.is_active ? <span className="text-emerald-400">Active</span> : <span className="text-muted-foreground">Draft</span>}
+                    {p.is_active ? <span className="text-emerald-400">Active</span> : <span className="text-muted-foreground">Inactive</span>}
                     {p.is_featured && <span className="ml-2 text-accent">Featured</span>}
                     {p.is_subscription && <span className="ml-2 text-primary">Sub</span>}
                   </td>
-                  <td className="px-4 py-3 text-right space-x-2">
+                  <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
+                    <button onClick={() => toggleActive(p)} className="text-xs text-muted-foreground hover:text-foreground hover:underline">
+                      {p.is_active ? "Deactivate" : "Activate"}
+                    </button>
                     <button onClick={() => setEditing(p)} className="text-xs text-primary hover:underline"><Edit className="h-3.5 w-3.5 inline" /> Edit</button>
                     <button onClick={() => del(p.id)} className="text-xs text-destructive hover:underline">Delete</button>
                   </td>
                 </tr>
               );
             })}
-            {products.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No products yet.</td></tr>}
+            {visible.length === 0 && <tr><td colSpan={6} className="p-6 text-center text-muted-foreground">No products match this filter.</td></tr>}
           </tbody>
+
         </table>
       </div>
 
