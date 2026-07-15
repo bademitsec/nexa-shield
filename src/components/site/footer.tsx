@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Shield, Mail, Phone } from "lucide-react";
+import { Shield, Mail, Phone, Instagram, Facebook, Twitter } from "lucide-react";
 import { site, services } from "@/lib/site-config";
 
 export function SiteFooter() {
