@@ -55,7 +55,7 @@ function ShopPage() {
     queryFn: async () => {
       let q = supabase
         .from("products")
-        .select("id,name,slug,short_description,price_ngn,compare_at_price_ngn,images,is_subscription,subscription_interval,stock,category_id,deposit_percent,specs")
+        .select("id,name,slug,short_description,description,price_ngn,compare_at_price_ngn,images,is_subscription,subscription_interval,stock,category_id,deposit_percent,specs")
         .eq("is_active", true)
         .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false });
