@@ -6,9 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Price } from "@/components/site/price";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useCart } from "@/lib/store";
 import { site } from "@/lib/site-config";
-import { Shield, Package, ShoppingCart, Search, Camera } from "lucide-react";
+import { Shield, Package, ShoppingCart, Search, Camera, Check } from "lucide-react";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
