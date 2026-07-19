@@ -362,9 +362,11 @@ function Step({
 function CaseStudyCard({
   p,
   variant,
+  onOpen,
 }: {
   p: Project;
   variant: "headline" | "grouped";
+  onOpen: (p: Project) => void;
 }) {
   const problem = pickTag(p.tags, "problem");
   const solution = pickTag(p.tags, "solution");
