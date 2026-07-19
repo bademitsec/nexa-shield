@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   ArrowRight,
   ShieldCheck,
@@ -8,8 +9,18 @@ import {
   LineChart,
   MessageSquareQuote,
   BadgeCheck,
+  Calendar,
+  Tag,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type Project = {
   id: string;
@@ -18,7 +29,9 @@ type Project = {
   category: string;
   client: string | null;
   summary: string;
+  content: string | null;
   cover_url: string | null;
+  gallery: string[];
   tags: string[];
   featured: boolean;
   completed_at: string | null;
@@ -30,7 +43,7 @@ const listOpts = queryOptions({
     const { data, error } = await supabase
       .from("portfolio_projects")
       .select(
-        "id,slug,title,category,client,summary,cover_url,tags,featured,completed_at",
+        "id,slug,title,category,client,summary,content,cover_url,gallery,tags,featured,completed_at",
       )
       .eq("published", true)
       .order("featured", { ascending: false })
@@ -137,6 +150,7 @@ function groupProject(cat: string) {
 
 function PortfolioPage() {
   const { data: items } = useSuspenseQuery(listOpts);
+  const [selected, setSelected] = useState<Project | null>(null);
 
   // Featured first, then top 4 as headline case studies.
   const headline = items.slice(0, 4);
@@ -242,7 +256,7 @@ function PortfolioPage() {
           </div>
           <div className="mt-6 grid gap-5 md:grid-cols-2">
             {headline.map((p) => (
-              <CaseStudyCard key={p.id} p={p} variant="headline" />
+              <CaseStudyCard key={p.id} p={p} variant="headline" onOpen={setSelected} />
             ))}
           </div>
         </section>
@@ -267,7 +281,7 @@ function PortfolioPage() {
           </div>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {g.items.map((p) => (
-              <CaseStudyCard key={p.id} p={p} variant="grouped" />
+              <CaseStudyCard key={p.id} p={p} variant="grouped" onOpen={setSelected} />
             ))}
           </div>
         </section>
@@ -310,7 +324,154 @@ function PortfolioPage() {
           </div>
         </div>
       </section>
+
+      <CaseStudyDialog project={selected} onClose={() => setSelected(null)} />
     </>
+  );
+}
+
+function CaseStudyDialog({
+  project,
+  onClose,
+}: {
+  project: Project | null;
+  onClose: () => void;
+}) {
+  const p = project;
+  return (
+    <Dialog open={!!p} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+        {p && (
+          <>
+            <DialogHeader>
+              <p className="text-xs font-medium uppercase tracking-widest text-primary">
+                {p.category}
+              </p>
+              <DialogTitle className="text-2xl sm:text-3xl">{p.title}</DialogTitle>
+              <DialogDescription className="text-base text-muted-foreground">
+                {p.summary}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+              {p.client && (
+                <span>
+                  Client: <span className="text-foreground">{p.client}</span>
+                </span>
+              )}
+              {p.completed_at && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {new Date(p.completed_at).toLocaleDateString("en-NG", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              )}
+            </div>
+
+            {p.cover_url && (
+              <img
+                src={p.cover_url}
+                alt={p.title}
+                className="mt-4 aspect-[16/9] w-full rounded-xl border border-border object-cover"
+              />
+            )}
+
+            {(() => {
+              const problem = pickTag(p.tags, "problem");
+              const solution = pickTag(p.tags, "solution");
+              const result = pickTag(p.tags, "result");
+              const testimonial = pickTag(p.tags, "testimonial");
+              return (
+                <>
+                  {(problem || solution || result) && (
+                    <dl className="mt-5 grid gap-3 text-sm">
+                      {problem && (
+                        <div>
+                          <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            Problem
+                          </dt>
+                          <dd className="mt-0.5 text-foreground/90">{problem}</dd>
+                        </div>
+                      )}
+                      {solution && (
+                        <div>
+                          <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            Solution
+                          </dt>
+                          <dd className="mt-0.5 text-foreground/90">{solution}</dd>
+                        </div>
+                      )}
+                      {result && (
+                        <div>
+                          <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            Result
+                          </dt>
+                          <dd className="mt-0.5 font-medium text-foreground">{result}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  )}
+
+                  {p.content && (
+                    <div className="mt-5 whitespace-pre-line text-sm text-foreground/90">
+                      {p.content}
+                    </div>
+                  )}
+
+                  {testimonial && (
+                    <blockquote className="mt-5 rounded-lg border-l-2 border-primary/60 bg-background/40 p-3 text-sm italic text-foreground/85">
+                      <MessageSquareQuote className="mb-1 h-3.5 w-3.5 text-primary" />
+                      "{testimonial}"
+                    </blockquote>
+                  )}
+                </>
+              );
+            })()}
+
+            {p.gallery?.length > 0 && (
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {p.gallery.map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    className="aspect-video w-full rounded-lg border border-border object-cover"
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            )}
+
+            {p.tags?.length > 0 && (
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <Tag className="h-3.5 w-3.5 text-muted-foreground" />
+                {p.tags.map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-full border border-border/70 bg-surface px-2.5 py-1 text-xs text-muted-foreground"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-6 flex flex-wrap justify-end gap-2">
+              <Button variant="outline" onClick={onClose}>
+                Close
+              </Button>
+              <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Link to="/contact" onClick={onClose}>
+                  Request a similar quote
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -348,9 +509,11 @@ function Step({
 function CaseStudyCard({
   p,
   variant,
+  onOpen,
 }: {
   p: Project;
   variant: "headline" | "grouped";
+  onOpen: (p: Project) => void;
 }) {
   const problem = pickTag(p.tags, "problem");
   const solution = pickTag(p.tags, "solution");
@@ -451,13 +614,13 @@ function CaseStudyCard({
         )}
 
         <div className="mt-5 flex items-center justify-between gap-3 pt-4">
-          <Link
-            to="/portfolio/$slug"
-            params={{ slug: p.slug }}
+          <button
+            type="button"
+            onClick={() => onOpen(p)}
             className="text-sm text-muted-foreground hover:text-primary"
           >
             Read case study →
-          </Link>
+          </button>
           <Link
             to="/contact"
             className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20"
