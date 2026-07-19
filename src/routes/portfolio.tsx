@@ -281,7 +281,7 @@ function PortfolioPage() {
           </div>
           <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {g.items.map((p) => (
-              <CaseStudyCard key={p.id} p={p} variant="grouped" />
+              <CaseStudyCard key={p.id} p={p} variant="grouped" onOpen={setSelected} />
             ))}
           </div>
         </section>
