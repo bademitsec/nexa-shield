@@ -467,13 +467,13 @@ function CaseStudyCard({
         )}
 
         <div className="mt-5 flex items-center justify-between gap-3 pt-4">
-          <Link
-            to="/portfolio/$slug"
-            params={{ slug: p.slug }}
+          <button
+            type="button"
+            onClick={() => onOpen(p)}
             className="text-sm text-muted-foreground hover:text-primary"
           >
             Read case study →
-          </Link>
+          </button>
           <Link
             to="/contact"
             className="inline-flex items-center gap-1.5 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20"
