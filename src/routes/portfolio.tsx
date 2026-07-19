@@ -324,7 +324,154 @@ function PortfolioPage() {
           </div>
         </div>
       </section>
+
+      <CaseStudyDialog project={selected} onClose={() => setSelected(null)} />
     </>
+  );
+}
+
+function CaseStudyDialog({
+  project,
+  onClose,
+}: {
+  project: Project | null;
+  onClose: () => void;
+}) {
+  const p = project;
+  return (
+    <Dialog open={!!p} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+        {p && (
+          <>
+            <DialogHeader>
+              <p className="text-xs font-medium uppercase tracking-widest text-primary">
+                {p.category}
+              </p>
+              <DialogTitle className="text-2xl sm:text-3xl">{p.title}</DialogTitle>
+              <DialogDescription className="text-base text-muted-foreground">
+                {p.summary}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+              {p.client && (
+                <span>
+                  Client: <span className="text-foreground">{p.client}</span>
+                </span>
+              )}
+              {p.completed_at && (
+                <span className="inline-flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" />
+                  {new Date(p.completed_at).toLocaleDateString("en-NG", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </span>
+              )}
+            </div>
+
+            {p.cover_url && (
+              <img
+                src={p.cover_url}
+                alt={p.title}
+                className="mt-4 aspect-[16/9] w-full rounded-xl border border-border object-cover"
+              />
+            )}
+
+            {(() => {
+              const problem = pickTag(p.tags, "problem");
+              const solution = pickTag(p.tags, "solution");
+              const result = pickTag(p.tags, "result");
+              const testimonial = pickTag(p.tags, "testimonial");
+              return (
+                <>
+                  {(problem || solution || result) && (
+                    <dl className="mt-5 grid gap-3 text-sm">
+                      {problem && (
+                        <div>
+                          <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            Problem
+                          </dt>
+                          <dd className="mt-0.5 text-foreground/90">{problem}</dd>
+                        </div>
+                      )}
+                      {solution && (
+                        <div>
+                          <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            Solution
+                          </dt>
+                          <dd className="mt-0.5 text-foreground/90">{solution}</dd>
+                        </div>
+                      )}
+                      {result && (
+                        <div>
+                          <dt className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            Result
+                          </dt>
+                          <dd className="mt-0.5 font-medium text-foreground">{result}</dd>
+                        </div>
+                      )}
+                    </dl>
+                  )}
+
+                  {p.content && (
+                    <div className="mt-5 whitespace-pre-line text-sm text-foreground/90">
+                      {p.content}
+                    </div>
+                  )}
+
+                  {testimonial && (
+                    <blockquote className="mt-5 rounded-lg border-l-2 border-primary/60 bg-background/40 p-3 text-sm italic text-foreground/85">
+                      <MessageSquareQuote className="mb-1 h-3.5 w-3.5 text-primary" />
+                      "{testimonial}"
+                    </blockquote>
+                  )}
+                </>
+              );
+            })()}
+
+            {p.gallery?.length > 0 && (
+              <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                {p.gallery.map((src, i) => (
+                  <img
+                    key={i}
+                    src={src}
+                    alt=""
+                    className="aspect-video w-full rounded-lg border border-border object-cover"
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            )}
+
+            {p.tags?.length > 0 && (
+              <div className="mt-5 flex flex-wrap items-center gap-2">
+                <Tag className="h-3.5 w-3.5 text-muted-foreground" />
+                {p.tags.map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-full border border-border/70 bg-surface px-2.5 py-1 text-xs text-muted-foreground"
+                  >
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="mt-6 flex flex-wrap justify-end gap-2">
+              <Button variant="outline" onClick={onClose}>
+                Close
+              </Button>
+              <Button asChild className="bg-accent text-accent-foreground hover:bg-accent/90">
+                <Link to="/contact" onClick={onClose}>
+                  Request a similar quote
+                </Link>
+              </Button>
+            </div>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
