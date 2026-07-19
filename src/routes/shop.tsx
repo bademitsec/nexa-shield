@@ -188,7 +188,9 @@ function ShopPage() {
                     )}
                   </div>
                   <div className="mt-auto pt-4 flex gap-2">
-                    <Button size="sm" variant="outline" className="flex-1">View details</Button>
+                    <span className="inline-flex flex-1 items-center justify-center rounded-md border border-border/60 bg-background px-3 h-9 text-xs font-medium group-hover:border-primary/60 group-hover:text-primary transition">
+                      View details
+                    </span>
                     <Button
                       size="sm"
                       className="flex-1"
