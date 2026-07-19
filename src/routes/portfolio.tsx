@@ -150,6 +150,7 @@ function groupProject(cat: string) {
 
 function PortfolioPage() {
   const { data: items } = useSuspenseQuery(listOpts);
+  const [selected, setSelected] = useState<Project | null>(null);
 
   // Featured first, then top 4 as headline case studies.
   const headline = items.slice(0, 4);
