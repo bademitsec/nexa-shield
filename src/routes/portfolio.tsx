@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
+import { useState } from "react";
 import {
   ArrowRight,
   ShieldCheck,
@@ -8,8 +9,18 @@ import {
   LineChart,
   MessageSquareQuote,
   BadgeCheck,
+  Calendar,
+  Tag,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type Project = {
   id: string;
@@ -18,7 +29,9 @@ type Project = {
   category: string;
   client: string | null;
   summary: string;
+  content: string | null;
   cover_url: string | null;
+  gallery: string[];
   tags: string[];
   featured: boolean;
   completed_at: string | null;
@@ -30,7 +43,7 @@ const listOpts = queryOptions({
     const { data, error } = await supabase
       .from("portfolio_projects")
       .select(
-        "id,slug,title,category,client,summary,cover_url,tags,featured,completed_at",
+        "id,slug,title,category,client,summary,content,cover_url,gallery,tags,featured,completed_at",
       )
       .eq("published", true)
       .order("featured", { ascending: false })
