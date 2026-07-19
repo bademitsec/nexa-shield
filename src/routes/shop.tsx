@@ -191,9 +191,13 @@ function ShopPage() {
                     )}
                   </div>
                   <div className="mt-auto pt-4 flex gap-2">
-                    <span className="inline-flex flex-1 items-center justify-center rounded-md border border-border/60 bg-background px-3 h-9 text-xs font-medium group-hover:border-primary/60 group-hover:text-primary transition">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDetail(p); }}
+                      className="inline-flex flex-1 items-center justify-center rounded-md border border-border/60 bg-background px-3 h-9 text-xs font-medium hover:border-primary/60 hover:text-primary transition"
+                    >
                       View details
-                    </span>
+                    </button>
                     <Button
                       size="sm"
                       className="flex-1"
