@@ -340,11 +340,6 @@ function ProductDetailsDialog({
             )}
 
             <DialogFooter className="gap-2 sm:gap-2">
-              <Button variant="outline" asChild>
-                <Link to="/shop/$slug" params={{ slug: p.slug }} onClick={onClose}>
-                  Open full page
-                </Link>
-              </Button>
               <Button
                 disabled={!p.is_subscription && p.stock <= 0}
                 onClick={() => onAdd(p)}
