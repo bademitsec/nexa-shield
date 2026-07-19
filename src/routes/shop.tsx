@@ -35,6 +35,7 @@ type ProductRow = {
 function ShopPage() {
   const [cat, setCat] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const [detail, setDetail] = useState<ProductRow | null>(null);
   const cart = useCart();
 
   const { data: categories = [] } = useQuery({
