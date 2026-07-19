@@ -6,9 +6,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Price } from "@/components/site/price";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { useCart } from "@/lib/store";
 import { site } from "@/lib/site-config";
-import { Shield, Package, ShoppingCart, Search, Camera } from "lucide-react";
+import { Shield, Package, ShoppingCart, Search, Camera, Check } from "lucide-react";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/shop")({
 
 type ProductRow = {
   id: string; name: string; slug: string; short_description: string | null;
+  description: string | null;
   price_ngn: number; compare_at_price_ngn: number | null; images: string[];
   is_subscription: boolean; subscription_interval: string | null;
   stock: number; category_id: string | null; deposit_percent: number;
@@ -33,6 +35,7 @@ type ProductRow = {
 function ShopPage() {
   const [cat, setCat] = useState<string>("all");
   const [query, setQuery] = useState("");
+  const [detail, setDetail] = useState<ProductRow | null>(null);
   const cart = useCart();
 
   const { data: categories = [] } = useQuery({
@@ -52,7 +55,7 @@ function ShopPage() {
     queryFn: async () => {
       let q = supabase
         .from("products")
-        .select("id,name,slug,short_description,price_ngn,compare_at_price_ngn,images,is_subscription,subscription_interval,stock,category_id,deposit_percent,specs")
+        .select("id,name,slug,short_description,description,price_ngn,compare_at_price_ngn,images,is_subscription,subscription_interval,stock,category_id,deposit_percent,specs")
         .eq("is_active", true)
         .order("is_featured", { ascending: false })
         .order("created_at", { ascending: false });
@@ -188,9 +191,13 @@ function ShopPage() {
                     )}
                   </div>
                   <div className="mt-auto pt-4 flex gap-2">
-                    <span className="inline-flex flex-1 items-center justify-center rounded-md border border-border/60 bg-background px-3 h-9 text-xs font-medium group-hover:border-primary/60 group-hover:text-primary transition">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setDetail(p); }}
+                      className="inline-flex flex-1 items-center justify-center rounded-md border border-border/60 bg-background px-3 h-9 text-xs font-medium hover:border-primary/60 hover:text-primary transition"
+                    >
                       View details
-                    </span>
+                    </button>
                     <Button
                       size="sm"
                       className="flex-1"
@@ -220,7 +227,137 @@ function ShopPage() {
           Request a quote
         </Link>
       </div>
+
+      <ProductDetailsDialog
+        product={detail}
+        onClose={() => setDetail(null)}
+        onAdd={(p) => {
+          if (!p.is_subscription && p.stock <= 0) return;
+          cart.add({
+            productId: p.id, slug: p.slug, name: p.name,
+            priceNgn: Number(p.price_ngn), depositPercent: p.deposit_percent,
+            image: p.images?.[0], quantity: 1,
+            isSubscription: p.is_subscription, subscriptionInterval: p.subscription_interval,
+            maxStock: p.is_subscription ? 1 : Math.max(0, p.stock),
+          });
+          toast.success(`${p.name} added to cart`);
+          setDetail(null);
+        }}
+      />
     </div>
+  );
+}
+
+function ProductDetailsDialog({
+  product, onClose, onAdd,
+}: { product: ProductRow | null; onClose: () => void; onAdd: (p: ProductRow) => void }) {
+  const p = product;
+  const specs = (p?.specs ?? {}) as Record<string, unknown>;
+  const features = Array.isArray(specs.features) ? (specs.features as string[]) : [];
+  const tech = (typeof specs.tech === "object" && specs.tech ? specs.tech : specs) as Record<string, unknown>;
+  const useCase = typeof specs.use_case === "string" ? specs.use_case : null;
+  const recFor = typeof specs.recommended_for === "string" ? specs.recommended_for : null;
+  const hook = (typeof specs.hook_line === "string" ? specs.hook_line : null) ?? p?.short_description ?? "";
+  const techEntries = Object.entries(tech).filter(
+    ([k, v]) => !["features", "use_case", "recommended_for", "hook_line", "image_brief", "price_usd", "tech"].includes(k)
+      && (typeof v === "string" || typeof v === "number")
+  ) as [string, string | number][];
+
+  return (
+    <Dialog open={!!p} onOpenChange={(o) => !o && onClose()}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        {p && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="font-display text-2xl">{p.name}</DialogTitle>
+              {hook && <DialogDescription>{hook}</DialogDescription>}
+            </DialogHeader>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="aspect-square rounded-lg border border-border/60 bg-gradient-to-br from-primary/10 via-background to-accent/10 grid place-items-center overflow-hidden">
+                {p.images?.[0] ? (
+                  <img src={p.images[0]} alt={p.name} className="h-full w-full object-cover" />
+                ) : (
+                  <Camera className="h-12 w-12 text-primary/40" />
+                )}
+              </div>
+              <div>
+                {recFor && (
+                  <span className="inline-block rounded-full border border-border/60 bg-background/70 px-2.5 py-0.5 text-[11px] font-semibold">
+                    Recommended for {recFor}
+                  </span>
+                )}
+                <div className="mt-3 flex items-baseline gap-3">
+                  <Price ngn={p.price_ngn} className="text-2xl font-bold" />
+                  {p.compare_at_price_ngn && (
+                    <Price ngn={p.compare_at_price_ngn} className="text-sm text-muted-foreground line-through" />
+                  )}
+                  {p.is_subscription && (
+                    <span className="text-xs text-muted-foreground">per {p.subscription_interval}</span>
+                  )}
+                </div>
+                {p.description && (
+                  <p className="mt-4 text-sm text-muted-foreground whitespace-pre-line">{p.description}</p>
+                )}
+                {!p.is_subscription && (
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    {p.stock > 0 ? `${p.stock} in stock` : "Out of stock"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {features.length > 0 && (
+              <div className="mt-2">
+                <h4 className="text-xs uppercase tracking-widest text-accent">What you get</h4>
+                <ul className="mt-2 space-y-1.5">
+                  {features.map((f, i) => (
+                    <li key={i} className="flex items-start gap-2 text-sm">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {useCase && (
+              <div className="rounded-lg border border-border/60 bg-card/40 p-4">
+                <h4 className="text-xs uppercase tracking-widest text-accent">Best used for</h4>
+                <p className="mt-1.5 text-sm text-muted-foreground">{useCase}</p>
+              </div>
+            )}
+
+            {techEntries.length > 0 && (
+              <div className="rounded-lg border border-border/60 bg-card/40 divide-y divide-border/60">
+                {techEntries.map(([k, v]) => (
+                  <div key={k} className="flex justify-between px-4 py-2.5 text-sm">
+                    <span className="capitalize text-muted-foreground">{k.replace(/_/g, " ")}</span>
+                    <span className="font-medium text-right">{String(v)}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <DialogFooter className="gap-2 sm:gap-2">
+              <Button variant="outline" asChild>
+                <Link to="/shop/$slug" params={{ slug: p.slug }} onClick={onClose}>
+                  Open full page
+                </Link>
+              </Button>
+              <Button
+                disabled={!p.is_subscription && p.stock <= 0}
+                onClick={() => onAdd(p)}
+                className="bg-accent text-accent-foreground hover:bg-accent/90"
+              >
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                {p.is_subscription ? "Subscribe" : p.stock <= 0 ? "Out of stock" : "Add to cart"}
+              </Button>
+            </DialogFooter>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
