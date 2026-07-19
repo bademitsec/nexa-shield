@@ -25,6 +25,7 @@ export const Route = createFileRoute("/shop")({
 
 type ProductRow = {
   id: string; name: string; slug: string; short_description: string | null;
+  description: string | null;
   price_ngn: number; compare_at_price_ngn: number | null; images: string[];
   is_subscription: boolean; subscription_interval: string | null;
   stock: number; category_id: string | null; deposit_percent: number;
