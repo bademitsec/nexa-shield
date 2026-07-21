@@ -1,89 +1,60 @@
-# Admin-managed API credentials + backend wiring
+# Webfortix Growth & Conversion Upgrade
 
-## Overview
+This is a large change set. I'll ship it in 5 phases so each lands stable and reviewable. Anything time-sensitive (pixel IDs, PDF files, exact stat numbers) uses placeholders you can edit later via Supabase or a config file.
 
-Admin enters all third-party credentials (Paystack, Resend, Zoom) from the existing Settings page. Values are stored encrypted at rest in the database using Supabase Vault, read server-side only, and masked (last 4 chars) in dashboard responses. All backend functions read from Vault at request time so keys can be rotated without a redeploy.
+## Phase 1 — Homepage, Training pillar, Social proof, Schema
 
-## Phase 1 — Credential storage (foundation for everything else)
+- Homepage (`src/routes/index.tsx`):
+  - "Three services. One team." → "Four services. One team."
+  - Add **Training** service card (GraduationCap icon, link to `/training`)
+  - New **Featured: Training** section listing 5 paid programs with NGN/USD price via existing `<Price/>` component + "View training programs" and "Enroll now" CTAs
+  - New **Social Proof** section between services grid and Home Security feature:
+    - Stats row (clients served, installs completed, sites launched, training graduates) — values read from `site_settings` (editable in Supabase)
+    - Testimonials grid (3 cards, service tag)
+    - 3–4 featured portfolio thumbnails pulled from `portfolio_projects` (featured=true), each opening the existing case study dialog
+- Add LocalBusiness JSON-LD to homepage + Home Security page (service areas Lagos, Abuja, Port Harcourt)
+- Persistent WhatsApp button — already exists; extend to accept a per-page prefilled message and use it on service/training/shop pages
 
-1. Migration: new `integration_credentials` table
-   - `provider` (paystack | resend | zoom), `key_name`, `secret_ref` (Vault secret id), `last4`, `updated_by`, timestamps
-   - RLS: admin/staff only via existing `has_role` function
-   - Grants for `authenticated` + `service_role`
-2. Server functions in `src/lib/credentials.functions.ts`:
-   - `saveCredential({ provider, keyName, value })` — writes to Vault, upserts row, returns masked
-   - `listCredentials()` — returns `[{ provider, keyName, last4, updatedAt }]` (never the value)
-   - `deleteCredential({ provider, keyName })`
-   - `testConnection({ provider })` — Paystack: GET `/transaction/totals`; Resend: GET `/domains`; Zoom: OAuth token fetch
-3. Server helper `src/lib/credentials.server.ts`:
-   - `getCredential(provider, keyName)` — reads from Vault, cached per-request
-4. Settings page: replace the "secret keys note" block with a real **Integrations** panel — 3 cards (Paystack / Resend / Zoom), each with input fields, save button, masked display of saved keys, and **Test Connection** button.
+## Phase 2 — Lead routing, UTM tracking, SEO copy
 
-## Phase 2 — Paystack hardening
+- Migration:
+  - `quotes` table: add `service_type`, `utm_source`, `utm_medium`, `utm_campaign`, `source_tag`, `referral_code`
+- Contact form (`src/routes/contact.tsx`): required "Service Interested In" dropdown; capture UTM params from URL (persisted per session)
+- Admin quotes inbox (`src/routes/admin.quotes.tsx`): filter chips by service_type, columns for source + UTM, simple source breakdown table
+- WhatsApp links on each service page + `/training` prefilled with service name
+- SEO: update meta titles/descriptions + H1/H2 on 4 pages per spec; add Lagos/Abuja/Port Harcourt content blocks on Home Security page
 
-- Update `src/lib/paystack.server.ts` to read secret + webhook secret from `getCredential()` (falls back to env for existing `PAYSTACK_SECRET_KEY`)
-- Webhook route: verify signature against admin-saved webhook secret; on `charge.success` insert into `payments` and trigger order-confirmation email + receipt PDF
-- Expose `PAYSTACK_PUBLIC_KEY` to checkout page via a server fn (not env)
+## Phase 3 — Shop lead capture + Lead magnets
 
-## Phase 3 — Enrollments (post-payment training flow)
+- Shop product cards + detail dialog: secondary CTA "Not sure what you need? Get a free installation quote" → opens dialog form → writes to `quotes` with `service_type='home-security'`, `source_tag='shop'`
+- Migration: `lead_magnets` table (name, email, phone, resource, service_type_interest)
+- New route `/resources`: two downloadable guides ("Home Security Checklist", "Website Audit Guide"). Form captures details, then reveals a placeholder PDF link (you'll upload the real PDFs to Supabase Storage `resources` bucket later)
 
-- Migration: `enrollments` table
-  - `user_id`, `order_id`, `program_slug`, `program_title`, `amount_ngn`, `transaction_ref`, `requested_start_date`, `status` (pending_contact | contacted | scheduled), `zoom_meeting_url`, `zoom_meeting_id`, `admin_notes`, timestamps
-- On successful Paystack payment for a training order, redirect user to new `/orders/$id/enroll` page with a date picker
-- Save enrollment → send confirmation email (receipt + requested start date + "we'll be in touch" note)
-- New admin route `/admin/enrollments` with status column and action buttons (Mark Contacted / Schedule)
-- When admin clicks "Schedule", show datetime picker → creates Zoom meeting via server fn → saves URL → emails customer
+## Phase 4 — Exit intent, Client dashboard entry, Tracking pixels
 
-## Phase 4 — Resend email + logs
+- Exit-intent popup component (mounted in `__root.tsx`):
+  - Desktop: `mouseleave` top-edge; Mobile: 30s OR 50% scroll
+  - Once per session (`sessionStorage`); suppressed after any form submit sets `wf_form_submitted`
+  - CTA: name + WhatsApp capture → `quotes` (source_tag='exit-intent')
+- `/auth` copy update + homepage sub-nav pill "Existing client? Sign in to track your project"
+- Tracking pixels:
+  - Add Meta Pixel + GTM snippets in `__root.tsx` head, gated by `VITE_META_PIXEL_ID` / `VITE_GTM_ID` (placeholders until you provide IDs — no network calls when empty)
+  - `src/lib/analytics.ts` helper firing `PageView`, `Lead`, `AddToCart`, `LeadMagnetDownload` events, called from the relevant handlers
 
-- `src/lib/email.server.ts` — reads Resend API key from Vault, `sendEmail({ to, subject, html, tag })`
-- Migration: `email_logs` table (`to`, `subject`, `template`, `status`, `provider_id`, `error`, `sent_at`)
-- React Email templates: `OrderConfirmation`, `EnrollmentConfirmation`, `JobApplicationReceived`, `CampaignEmail` (brand-styled)
-- Wired triggers:
-  - Paystack webhook `charge.success` → OrderConfirmation + PDF receipt attachment
-  - Enrollment insert → EnrollmentConfirmation
-  - Contact form with `type=job` → JobApplicationReceived
-- New admin route `/admin/email-logs` (paginated table)
-- Test Connection button sends a test email to the admin's own email
+## Phase 5 — Referral program
 
-## Phase 5 — PDF receipts
+- Migration:
+  - `profiles.referral_code` (unique, generated on first paid order via trigger on `orders.status='paid'`)
+  - `quotes.referral_by_code`, `quotes.referral_reward_status`
+- New route `/refer`: signed-in clients see their code + shareable link; non-clients see explainer + CTA to purchase
+- Checkout + contact form: optional "Referral code" field, validated server-side
 
-- `src/lib/receipt.server.ts` using `pdf-lib` (Worker-safe)
-- Itemized: line items, amount, date, transaction ID, Webfortix business details, logo
-- Attached to order confirmation email + downloadable from `/orders/$id` via a signed server route
-- Stored ref logged in `payments.receipt_url`
+## Out of scope for this pass (call out for later)
+- Real testimonial content (using tasteful placeholders)
+- Real PDF files for lead magnets (upload later)
+- Actual Meta Pixel / GTM IDs
+- Rewards fulfillment workflow beyond marking `referral_reward_status='pending'`
 
-## Phase 6 — Campaign send + tracking
+## Order I'll ship
 
-- Wire existing Campaigns UI to Resend batch send:
-  - Segment resolver: `all_customers` / `subscribers` / `leads` → recipient list from Supabase
-  - "Send now" button → chunked batch through Resend, updates `email_campaigns.sent_count` + `sent_at` + `status='sent'`
-- Add columns: `open_count`, `click_count`, `resend_broadcast_id`
-- Public route `/api/public/resend/webhook` — verifies Resend signature, increments open/click counts
-
-## Phase 7 — Zoom integration
-
-- Zoom Server-to-Server OAuth: admin saves `ZOOM_ACCOUNT_ID`, `ZOOM_CLIENT_ID`, `ZOOM_CLIENT_SECRET` via Integrations panel
-- `src/lib/zoom.server.ts` — token cache + `createMeeting({ topic, start_time, duration, invitee_email })`
-- Test Connection = fetch OAuth token
-- Called from admin enrollment "Schedule" action
-
-## Security guarantees
-
-- All secret values stored in Supabase Vault (`vault.secrets`), never in plain columns
-- No credential value ever returned by any server fn — only `last4`
-- Admin-only RLS + `has_role('admin' | 'staff')` check on every credential fn
-- Audit log table `admin_audit_log` records: who saved which key (no value), who sent which campaign, who changed enrollment status, who processed which payment
-- All third-party calls read secrets at request time inside the handler — never at module scope
-
-## Technical implementation notes
-
-- Vault access: use `vault.create_secret(value, name)` → returns `id`; read via `select decrypted_secret from vault.decrypted_secrets where id = $1`. Wrapped in SECURITY DEFINER functions since `vault` schema is service-role-only
-- Existing `PAYSTACK_SECRET_KEY` env var: `getCredential('paystack', 'secret_key')` falls back to `process.env.PAYSTACK_SECRET_KEY` when no vault row exists — zero downtime migration
-- Zoom S2S token: cached in-memory per-Worker (1 hour TTL) to avoid re-auth per request
-- PDF generation uses `pdf-lib` (pure JS, Worker-compatible) — no `sharp`/`puppeteer`
-- Contact form job-application detection: existing `contact` route gains a `type` field
-
-## Order of shipping
-
-I'll build Phase 1 first (unblocks everything). Once you can save keys from Settings, phases 2→7 land in sequence. Total ~7 migrations, ~15 new server functions, 3 new admin routes.
+Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5, each as its own change. Reply "go" to start Phase 1, or tell me to reorder / drop anything.
