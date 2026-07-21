@@ -2,19 +2,48 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Camera, Lock, Cloud, ShieldCheck } from "lucide-react";
 import { ServiceLayout } from "./services.web-design";
 
+const HOME_SECURITY_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  name: "Webfortix Home Security",
+  description:
+    "CCTV installation, alarm systems, smart locks and 24/7 cloud monitoring for homes and businesses in Lagos, Abuja and Port Harcourt.",
+  url: "https://webfortix.com/services/home-security",
+  telephone: "+234 813 951 1908",
+  areaServed: [
+    { "@type": "City", name: "Lagos" },
+    { "@type": "City", name: "Abuja" },
+    { "@type": "City", name: "Port Harcourt" },
+    { "@type": "Country", name: "Nigeria" },
+  ],
+  serviceType: [
+    "CCTV installation",
+    "Smart home security",
+    "Alarm systems",
+    "Access control",
+    "Cloud monitoring",
+  ],
+};
+
 export const Route = createFileRoute("/services/home-security")({
   head: () => ({
     meta: [
-      { title: "Home Security & Automation Installers in Africa — Webfortix" },
+      { title: "CCTV Installation & Smart Home Security in Lagos, Abuja & Port Harcourt | Webfortix" },
       {
         name: "description",
         content:
-          "CCTV cameras, NVRs, alarms, smart locks and 24/7 cloud monitoring — supplied and professionally installed across Africa.",
+          "Professionally installed CCTV, alarms, smart locks and 24/7 cloud monitoring in Lagos, Abuja and Port Harcourt. Free on-site survey. 12-month warranty.",
       },
-      { property: "og:title", content: "Home Security & Automation — Webfortix" },
+      { property: "og:title", content: "CCTV & Smart Home Security — Lagos, Abuja & Port Harcourt | Webfortix" },
       {
         property: "og:description",
-        content: "CCTV, alarms, smart locks and 24/7 monitoring across Africa.",
+        content: "CCTV, alarms, smart locks and 24/7 monitoring — installed across Lagos, Abuja and Port Harcourt.",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(HOME_SECURITY_JSONLD),
       },
     ],
   }),
