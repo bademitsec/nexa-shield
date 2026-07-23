@@ -103,9 +103,13 @@ function ShopPage() {
           Security hardware & smart-building gear
         </h1>
         <p className="mt-3 text-muted-foreground">
-          CCTV, NVRs, solar & 4G cameras, PTZ, video doorbells and smart automation — spec'd, sold and installed by the same people. Prices in NGN with a USD toggle.
+          CCTV, NVRs, solar & 4G cameras, PTZ, video doorbells and smart automation — supplied across all 10 of our African markets (supply-only outside Nigeria). Custom on-site installation is available in Lagos, Abuja & Port Harcourt. Prices in NGN with a USD toggle.
         </p>
       </div>
+      <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-xs text-amber-200">
+        <strong>Ordering from outside Nigeria?</strong> Import duties, customs fees and clearance charges may apply depending on your country's regulations and are the responsibility of the customer. Delivery timelines vary by country.
+      </div>
+
 
       <div className="mt-8 flex flex-col-reverse gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex flex-wrap gap-2">
@@ -304,8 +308,12 @@ function ProductDetailsDialog({
                     {p.stock > 0 ? `${p.stock} in stock` : "Out of stock"}
                   </p>
                 )}
+                <p className="mt-3 rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] leading-relaxed text-amber-200">
+                  International orders: import duties, customs fees and clearance charges may apply and are the customer's responsibility. Delivery timelines vary by country.
+                </p>
               </div>
             </div>
+
 
             {features.length > 0 && (
               <div className="mt-2">
