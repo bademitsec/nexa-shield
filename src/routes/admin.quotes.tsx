@@ -13,7 +13,9 @@ interface Quote {
   service: string; message: string | null; status: string;
   address: string | null; property_size: string | null; created_at: string;
   attachments: string[] | null;
+  country: string | null;
 }
+
 
 export const Route = createFileRoute("/admin/quotes")({
   component: AdminQuotes,
@@ -42,13 +44,20 @@ function AdminQuotes() {
         <div className="rounded-xl border border-border/60 bg-card/40 overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="border-b border-border/60 text-xs uppercase text-muted-foreground">
-              <tr><th className="text-left px-4 py-2.5">Name</th><th className="text-left px-4 py-2.5">Service</th><th className="text-left px-4 py-2.5">Status</th><th className="text-left px-4 py-2.5">Date</th></tr>
+              <tr>
+                <th className="text-left px-4 py-2.5">Name</th>
+                <th className="text-left px-4 py-2.5">Service</th>
+                <th className="text-left px-4 py-2.5">Country</th>
+                <th className="text-left px-4 py-2.5">Status</th>
+                <th className="text-left px-4 py-2.5">Date</th>
+              </tr>
             </thead>
             <tbody className="divide-y divide-border/60">
               {rows.map((q) => (
                 <tr key={q.id} onClick={() => setSelected(q)} className="cursor-pointer hover:bg-secondary/40">
                   <td className="px-4 py-3"><div>{q.full_name}</div><div className="text-xs text-muted-foreground">{q.email}</div></td>
                   <td className="px-4 py-3 text-muted-foreground capitalize">{q.service.replace(/-/g," ")}</td>
+                  <td className="px-4 py-3 text-xs text-muted-foreground">{q.country ?? "—"}</td>
                   <td className="px-4 py-3">
                     <select value={q.status} onChange={(e) => { e.stopPropagation(); updateStatus(q.id, e.target.value); }}
                       onClick={(e) => e.stopPropagation()}
@@ -59,7 +68,8 @@ function AdminQuotes() {
                   <td className="px-4 py-3 text-xs text-muted-foreground">{formatDate(q.created_at)}</td>
                 </tr>
               ))}
-              {rows.length === 0 && <tr><td colSpan={4} className="p-6 text-center text-muted-foreground">No quote requests yet.</td></tr>}
+              {rows.length === 0 && <tr><td colSpan={5} className="p-6 text-center text-muted-foreground">No quote requests yet.</td></tr>}
+
             </tbody>
           </table>
         </div>
