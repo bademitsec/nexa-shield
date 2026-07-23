@@ -2,7 +2,7 @@ export const site = {
   name: "Webfortix",
   tagline: "Web. Marketing. Security.",
   description:
-    "Webfortix builds fast websites, growth-driven digital marketing, and installs smart home security systems across Africa.",
+    "Webfortix is headquartered in Nigeria, delivering web design, digital marketing, home security products, and training services to clients across 10 African countries.",
   url: "https://webfortix.com",
   whatsapp: "2348139511908", // digits only, E.164 without +
   email: "support@webfortix.com",
@@ -14,6 +14,7 @@ export const site = {
     facebook: "https://facebook.com/webfortix",
   },
 };
+
 
 export const services = [
   {
