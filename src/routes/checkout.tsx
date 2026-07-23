@@ -164,14 +164,27 @@ function CheckoutPage() {
               <Field label="City" error={form.formState.errors.city?.message}>
                 <Input {...form.register("city")} />
               </Field>
-              <Field label="State" error={form.formState.errors.state?.message}>
+              <Field label="State / Region" error={form.formState.errors.state?.message}>
                 <Input {...form.register("state")} />
               </Field>
-              <Field label="Country">
-                <Input {...form.register("country")} placeholder="Country" />
+              <Field label="Country" error={form.formState.errors.country?.message}>
+                <Select value={country} onValueChange={(v) => form.setValue("country", v, { shouldValidate: true })}>
+                  <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
+                  <SelectContent>
+                    {COUNTRY_OPTIONS.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </Field>
             </div>
+            {country && country !== "Nigeria" && (
+              <p className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-200">
+                {IMPORT_DUTIES_NOTICE} Pricing is shown in USD for non-Nigerian orders.
+              </p>
+            )}
           </Section>
+
 
           <Section title="Notes (optional)">
             <Textarea {...form.register("customer_notes")} rows={3} placeholder="Access instructions, preferred install date, etc." />
