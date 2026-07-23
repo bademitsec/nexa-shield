@@ -187,6 +187,13 @@ function TrainingPage() {
               digital marketing, e-business, and content creation — built
               from real projects, not recycled theory.
             </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              100% remote delivery. Open to participants in Nigeria, Kenya,
+              South Africa, Egypt, Ghana, Morocco, Rwanda, Tanzania, Uganda
+              and Ivory Coast. Any physical materials or certificates shipped
+              on request follow country-specific delivery timelines.
+            </p>
+
             <div className="mt-8 flex flex-wrap gap-3">
               <Button
                 asChild
