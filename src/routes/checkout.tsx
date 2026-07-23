@@ -6,14 +6,28 @@ import { z } from "zod";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useCart } from "@/lib/store";
+import { useCart, useCurrency } from "@/lib/store";
 import { Price } from "@/components/site/price";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createOrderAndInitPayment } from "@/lib/checkout.functions";
 import { site } from "@/lib/site-config";
+import {
+  OPERATING_COUNTRY_NAMES,
+  IMPORT_DUTIES_NOTICE,
+  currencyForCountry,
+} from "@/lib/countries";
+
+const COUNTRY_OPTIONS = [...OPERATING_COUNTRY_NAMES, "Other"];
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: `Checkout — ${site.name}` }, { name: "robots", content: "noindex" }] }),
@@ -28,7 +42,7 @@ const schema = z.object({
   line2: z.string().max(200).optional(),
   city: z.string().min(2).max(80),
   state: z.string().min(2).max(80),
-  country: z.string().max(80).optional(),
+  country: z.string().min(2, "Select your country").max(80),
   customer_notes: z.string().max(1000).optional(),
 });
 type FormValues = z.infer<typeof schema>;
@@ -36,6 +50,7 @@ type FormValues = z.infer<typeof schema>;
 function CheckoutPage() {
   const router = useRouter();
   const cart = useCart();
+  const { setCurrency } = useCurrency();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const initFn = useServerFn(createOrderAndInitPayment);
@@ -47,14 +62,21 @@ function CheckoutPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { country: "" },
+    defaultValues: { country: "Nigeria" },
   });
+  const country = form.watch("country");
+
+  // Auto-switch displayed currency based on the customer's country.
+  useEffect(() => {
+    if (country) setCurrency(currencyForCountry(country));
+  }, [country, setCurrency]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       if (data.user?.email) form.setValue("email", data.user.email);
     });
   }, [form]);
+
 
   if (cart.items.length === 0) {
     return (
