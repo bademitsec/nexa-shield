@@ -20,25 +20,26 @@ import { Button } from "@/components/ui/button";
 export const Route = createFileRoute("/training")({
   head: () => ({
     meta: [
-      { title: "Training — Practical Digital Skills | Webfortix" },
+      { title: "Professional Training Programs — Web, Marketing & Security Skills | Webfortix" },
       {
         name: "description",
         content:
-          "Online training in web design, web development, digital marketing, e-business and content creation — taught by working practitioners. Enroll from Africa or anywhere.",
+          "Online training in web design, web development, digital marketing, e-business and content creation — 100% remote and open to participants in all 10 of our African markets.",
       },
       {
         property: "og:title",
-        content: "Webfortix Training — Learn Skills That Pay",
+        content: "Webfortix Training — Practical Skills, Open to 10 African Countries",
       },
       {
         property: "og:description",
         content:
-          "Practical, project-based online courses built for income, not just certificates.",
+          "Project-based online courses. Enroll from Nigeria, Kenya, South Africa, Egypt, Ghana, Morocco, Rwanda, Tanzania, Uganda or Ivory Coast.",
       },
     ],
   }),
   component: TrainingPage,
 });
+
 
 type Program = {
   slug: string;
@@ -186,6 +187,13 @@ function TrainingPage() {
               digital marketing, e-business, and content creation — built
               from real projects, not recycled theory.
             </p>
+            <p className="mt-3 text-sm text-muted-foreground">
+              100% remote delivery. Open to participants in Nigeria, Kenya,
+              South Africa, Egypt, Ghana, Morocco, Rwanda, Tanzania, Uganda
+              and Ivory Coast. Any physical materials or certificates shipped
+              on request follow country-specific delivery timelines.
+            </p>
+
             <div className="mt-8 flex flex-wrap gap-3">
               <Button
                 asChild

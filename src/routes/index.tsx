@@ -12,10 +12,12 @@ import {
   GraduationCap,
   Star,
   Quote,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/site/price";
 import { site, services } from "@/lib/site-config";
+import { OPERATING_COUNTRIES } from "@/lib/countries";
 import {
   siteStats,
   testimonials,
@@ -36,35 +38,75 @@ const LOCAL_BUSINESS_JSONLD = {
     addressCountry: "NG",
     addressRegion: "Nigeria",
   },
+  areaServed: OPERATING_COUNTRIES.map((c) => ({
+    "@type": "Country",
+    name: c.name,
+  })),
+  sameAs: [site.social.instagram, site.social.x, site.social.facebook],
+};
+
+// Custom on-site installation is Nigeria-only (Lagos, Abuja, Port Harcourt).
+const INSTALLATION_SERVICE_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "Custom CCTV & Smart Home Security Installation",
+  provider: { "@type": "Organization", name: site.name, url: site.url },
   areaServed: [
     { "@type": "City", name: "Lagos" },
     { "@type": "City", name: "Abuja" },
     { "@type": "City", name: "Port Harcourt" },
-    { "@type": "Country", name: "Nigeria" },
-    { "@type": "Place", name: "Africa" },
   ],
-  sameAs: [site.social.instagram, site.social.x, site.social.facebook],
+};
+
+// Remote / shippable services reach all 10 markets.
+const REMOTE_SERVICES_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: [
+    "Web Design & Development",
+    "Digital Marketing & SEO",
+    "Digital Skills Training",
+    "Security Hardware Supply (CCTV, NVR, PTZ, Solar, Doorbells)",
+  ],
+  provider: { "@type": "Organization", name: site.name, url: site.url },
+  areaServed: OPERATING_COUNTRIES.map((c) => ({
+    "@type": "Country",
+    name: c.name,
+  })),
 };
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: `${site.name} — Web Design, Marketing, Security & Training in Africa` },
+      {
+        title:
+          "Webfortix — Website Design, Digital Marketing, Home Security & Training Across Africa | Nigeria HQ",
+      },
       {
         name: "description",
         content:
-          "One partner for fast websites, digital marketing that ranks, professionally installed CCTV & smart-home security, and practical digital skills training — across Africa.",
+          "Nigeria HQ, serving 10 African countries. One partner for websites, digital marketing, home security products & training — remote delivery continent-wide, custom installs in Lagos, Abuja & Port Harcourt.",
+      },
+      {
+        property: "og:title",
+        content:
+          "Webfortix — Web, Marketing, Security & Training Across 10 African Countries",
+      },
+      {
+        property: "og:description",
+        content:
+          "Headquartered in Nigeria, delivering to Kenya, South Africa, Egypt, Ghana, Morocco, Rwanda, Tanzania, Uganda & Ivory Coast.",
       },
     ],
     scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify(LOCAL_BUSINESS_JSONLD),
-      },
+      { type: "application/ld+json", children: JSON.stringify(LOCAL_BUSINESS_JSONLD) },
+      { type: "application/ld+json", children: JSON.stringify(INSTALLATION_SERVICE_JSONLD) },
+      { type: "application/ld+json", children: JSON.stringify(REMOTE_SERVICES_JSONLD) },
     ],
   }),
   component: HomePage,
 });
+
 
 const pillarIcons = {
   "web-design": Globe,
@@ -109,8 +151,9 @@ function HomePage() {
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-accent" />
-              Nigerian-owned · Serving homes & businesses Across Africa
+              Nigerian-owned · Serving clients in 10 countries across Africa
             </span>
+
             <h1 className="mt-6 text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
               Build online.{" "}
               <span className="text-gradient-brand">Grow with data.</span>{" "}
@@ -178,7 +221,47 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Where We Operate */}
+      <section className="container-x pb-4 pt-4 md:pb-8">
+        <div className="rounded-2xl border border-border bg-surface/50 p-8 md:p-12">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              <MapPin className="h-3.5 w-3.5" /> Where we operate
+            </span>
+            <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
+              10 African countries. One trusted partner.
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Headquartered in Nigeria, delivering websites, marketing,
+              security products & training remotely across the continent.
+              Custom on-site installation is currently limited to Lagos, Abuja
+              & Port Harcourt.
+            </p>
+          </div>
+          <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+            {OPERATING_COUNTRIES.map((c) => (
+              <li
+                key={c.code}
+                className={`flex items-center justify-between rounded-xl border px-4 py-3 text-sm ${
+                  c.hq
+                    ? "border-primary/50 bg-primary/10 text-foreground"
+                    : "border-border/70 bg-background/40 text-foreground/90"
+                }`}
+              >
+                <span className="font-medium">{c.name}</span>
+                {c.hq && (
+                  <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
+                    HQ
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* Social proof — stats + testimonials + featured case studies */}
+
       <section className="container-x py-16 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">

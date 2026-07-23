@@ -6,28 +6,30 @@ import { site } from "@/lib/site-config";
 export const Route = createFileRoute("/services/web-design")({
   head: () => ({
     meta: [
-      { title: "Web Design & Development in Africa — Webfortix" },
+      { title: "Website Design & Development for Businesses Across Africa | Webfortix" },
       {
         name: "description",
         content:
-          "Custom websites, e-commerce and web apps built for speed, mobile, and Google. African-owned agency, fixed-scope quotes.",
+          "Custom websites, e-commerce and web apps built for speed, mobile and Google. Delivered 100% remotely to clients in Nigeria, Kenya, South Africa, Egypt, Ghana, Morocco, Rwanda, Tanzania, Uganda & Ivory Coast.",
       },
-      { property: "og:title", content: "Web Design & Development — Webfortix" },
+      { property: "og:title", content: "Web Design & Development Across Africa — Webfortix" },
       {
         property: "og:description",
-        content: "Fast, SEO-ready websites built for African businesses.",
+        content: "Fast, SEO-ready websites — remote delivery to 10 African countries.",
       },
     ],
   }),
   component: WebDesignPage,
 });
 
+
 function WebDesignPage() {
   return (
     <ServiceLayout
       eyebrow="Web Design & Development"
       title="Websites that load fast and convert."
-      lede="Custom-built marketing sites, e-commerce stores and web apps — designed for mobile, tuned for Google, delivered on time."
+      lede="Custom-built marketing sites, e-commerce stores and web apps — designed for mobile, tuned for Google, delivered on time. 100% remote delivery to clients in all 10 of our African markets."
+
       features={[
         { icon: Zap, title: "Lightning fast", desc: "Optimized for 3G/4G — pages under 2s on mid-range Android." },
         { icon: Smartphone, title: "Mobile-first", desc: "Every layout designed for the phone first, desktop second." },
