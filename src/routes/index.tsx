@@ -221,7 +221,47 @@ function HomePage() {
         </div>
       </section>
 
+      {/* Where We Operate */}
+      <section className="container-x pb-4 pt-4 md:pb-8">
+        <div className="rounded-2xl border border-border bg-surface/50 p-8 md:p-12">
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+              <MapPin className="h-3.5 w-3.5" /> Where we operate
+            </span>
+            <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
+              10 African countries. One trusted partner.
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground">
+              Headquartered in Nigeria, delivering websites, marketing,
+              security products & training remotely across the continent.
+              Custom on-site installation is currently limited to Lagos, Abuja
+              & Port Harcourt.
+            </p>
+          </div>
+          <ul className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
+            {OPERATING_COUNTRIES.map((c) => (
+              <li
+                key={c.code}
+                className={`flex items-center justify-between rounded-xl border px-4 py-3 text-sm ${
+                  c.hq
+                    ? "border-primary/50 bg-primary/10 text-foreground"
+                    : "border-border/70 bg-background/40 text-foreground/90"
+                }`}
+              >
+                <span className="font-medium">{c.name}</span>
+                {c.hq && (
+                  <span className="rounded-full bg-primary/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-primary">
+                    HQ
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
       {/* Social proof — stats + testimonials + featured case studies */}
+
       <section className="container-x py-16 md:py-24">
         <div className="mx-auto max-w-2xl text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
