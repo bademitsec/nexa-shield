@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { site } from "@/lib/site-config";
+import { OPERATING_COUNTRY_NAMES } from "@/lib/countries";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -26,7 +27,7 @@ export const Route = createFileRoute("/contact")({
       {
         name: "description",
         content:
-          "Get a scoped quote for web design, digital marketing or home security in Africa. Upload floor plans or site photos for a faster estimate.",
+          "Get a scoped quote for web design, digital marketing or home security. Serving clients in 10 African countries — HQ in Nigeria.",
       },
       { property: "og:title", content: `Contact ${site.name}` },
       { property: "og:description", content: "Request a scoped quote — reply within 1 business day." },
@@ -35,14 +36,18 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
+const COUNTRY_OPTIONS = [...OPERATING_COUNTRY_NAMES, "Other"];
+
 const schema = z.object({
   name: z.string().trim().min(2, "Please enter your name").max(120),
   email: z.string().trim().email("Please enter a valid email").max(255),
   phone: z.string().trim().max(40).optional().or(z.literal("")),
   service: z.enum(["web_design", "digital_marketing", "home_security", "other"]),
+  country: z.string().trim().min(2, "Please select your country").max(80),
   message: z.string().trim().min(10, "Tell us a bit more").max(5000),
 });
 type FormValues = z.infer<typeof schema>;
+
 
 const MAX_FILES = 6;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -59,9 +64,11 @@ function ContactPage() {
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { service: "home_security" },
+    defaultValues: { service: "home_security", country: "Nigeria" },
   });
   const service = watch("service");
+  const country = watch("country");
+
 
   const onFilesSelected = (list: FileList | null) => {
     if (!list) return;
@@ -102,13 +109,15 @@ function ContactPage() {
         email: values.email,
         phone: values.phone || null,
         service: values.service,
+        country: values.country,
         message: values.message,
         attachments: attachmentPaths,
       });
       if (insErr) throw insErr;
 
       toast.success("Thanks — we'll be in touch within 1 business day.");
-      reset({ service: values.service, name: "", email: "", phone: "", message: "" });
+      reset({ service: values.service, country: values.country, name: "", email: "", phone: "", message: "" });
+
       setFiles([]);
     } catch (e) {
       console.error(e);
@@ -150,20 +159,36 @@ function ContactPage() {
                 <Input id="phone" {...register("phone")} className="mt-1.5" placeholder="+234…" />
               </div>
               <div>
-                <Label htmlFor="service">What can we help with?</Label>
-                <Select value={service} onValueChange={(v) => setValue("service", v as FormValues["service"])}>
-                  <SelectTrigger id="service" className="mt-1.5">
-                    <SelectValue />
+                <Label htmlFor="country">Your country</Label>
+                <Select value={country} onValueChange={(v) => setValue("country", v)}>
+                  <SelectTrigger id="country" className="mt-1.5">
+                    <SelectValue placeholder="Select country" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="web_design">Web design & development</SelectItem>
-                    <SelectItem value="digital_marketing">Digital marketing</SelectItem>
-                    <SelectItem value="home_security">Home security & automation</SelectItem>
-                    <SelectItem value="other">Something else</SelectItem>
+                    {COUNTRY_OPTIONS.map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
+                {errors.country && <p className="mt-1 text-xs text-destructive">{errors.country.message}</p>}
               </div>
             </div>
+
+            <div>
+              <Label htmlFor="service">What can we help with?</Label>
+              <Select value={service} onValueChange={(v) => setValue("service", v as FormValues["service"])}>
+                <SelectTrigger id="service" className="mt-1.5">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="web_design">Web design & development</SelectItem>
+                  <SelectItem value="digital_marketing">Digital marketing</SelectItem>
+                  <SelectItem value="home_security">Home security & automation</SelectItem>
+                  <SelectItem value="other">Something else</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
 
             <div>
               <Label htmlFor="message">Project details</Label>
