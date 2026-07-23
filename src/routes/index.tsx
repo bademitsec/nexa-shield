@@ -12,10 +12,12 @@ import {
   GraduationCap,
   Star,
   Quote,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Price } from "@/components/site/price";
 import { site, services } from "@/lib/site-config";
+import { OPERATING_COUNTRIES } from "@/lib/countries";
 import {
   siteStats,
   testimonials,
@@ -36,35 +38,75 @@ const LOCAL_BUSINESS_JSONLD = {
     addressCountry: "NG",
     addressRegion: "Nigeria",
   },
+  areaServed: OPERATING_COUNTRIES.map((c) => ({
+    "@type": "Country",
+    name: c.name,
+  })),
+  sameAs: [site.social.instagram, site.social.x, site.social.facebook],
+};
+
+// Custom on-site installation is Nigeria-only (Lagos, Abuja, Port Harcourt).
+const INSTALLATION_SERVICE_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: "Custom CCTV & Smart Home Security Installation",
+  provider: { "@type": "Organization", name: site.name, url: site.url },
   areaServed: [
     { "@type": "City", name: "Lagos" },
     { "@type": "City", name: "Abuja" },
     { "@type": "City", name: "Port Harcourt" },
-    { "@type": "Country", name: "Nigeria" },
-    { "@type": "Place", name: "Africa" },
   ],
-  sameAs: [site.social.instagram, site.social.x, site.social.facebook],
+};
+
+// Remote / shippable services reach all 10 markets.
+const REMOTE_SERVICES_JSONLD = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  serviceType: [
+    "Web Design & Development",
+    "Digital Marketing & SEO",
+    "Digital Skills Training",
+    "Security Hardware Supply (CCTV, NVR, PTZ, Solar, Doorbells)",
+  ],
+  provider: { "@type": "Organization", name: site.name, url: site.url },
+  areaServed: OPERATING_COUNTRIES.map((c) => ({
+    "@type": "Country",
+    name: c.name,
+  })),
 };
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: `${site.name} — Web Design, Marketing, Security & Training in Africa` },
+      {
+        title:
+          "Webfortix — Website Design, Digital Marketing, Home Security & Training Across Africa | Nigeria HQ",
+      },
       {
         name: "description",
         content:
-          "One partner for fast websites, digital marketing that ranks, professionally installed CCTV & smart-home security, and practical digital skills training — across Africa.",
+          "Nigeria HQ, serving 10 African countries. One partner for websites, digital marketing, home security products & training — remote delivery continent-wide, custom installs in Lagos, Abuja & Port Harcourt.",
+      },
+      {
+        property: "og:title",
+        content:
+          "Webfortix — Web, Marketing, Security & Training Across 10 African Countries",
+      },
+      {
+        property: "og:description",
+        content:
+          "Headquartered in Nigeria, delivering to Kenya, South Africa, Egypt, Ghana, Morocco, Rwanda, Tanzania, Uganda & Ivory Coast.",
       },
     ],
     scripts: [
-      {
-        type: "application/ld+json",
-        children: JSON.stringify(LOCAL_BUSINESS_JSONLD),
-      },
+      { type: "application/ld+json", children: JSON.stringify(LOCAL_BUSINESS_JSONLD) },
+      { type: "application/ld+json", children: JSON.stringify(INSTALLATION_SERVICE_JSONLD) },
+      { type: "application/ld+json", children: JSON.stringify(REMOTE_SERVICES_JSONLD) },
     ],
   }),
   component: HomePage,
 });
+
 
 const pillarIcons = {
   "web-design": Globe,
@@ -109,8 +151,9 @@ function HomePage() {
           <div className="mx-auto max-w-3xl text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-surface/60 px-3 py-1 text-xs font-medium text-muted-foreground backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-accent" />
-              Nigerian-owned · Serving homes & businesses Across Africa
+              Nigerian-owned · Serving clients in 10 countries across Africa
             </span>
+
             <h1 className="mt-6 text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
               Build online.{" "}
               <span className="text-gradient-brand">Grow with data.</span>{" "}
