@@ -95,6 +95,54 @@ export type Database = {
         }
         Relationships: []
       }
+      courses: {
+        Row: {
+          anchor_price_ngn: number
+          badge: string | null
+          created_at: string
+          duration_hours: number
+          headline: string
+          id: string
+          is_active: boolean
+          outcomes: Json
+          price_ngn: number
+          slug: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          anchor_price_ngn?: number
+          badge?: string | null
+          created_at?: string
+          duration_hours?: number
+          headline?: string
+          id?: string
+          is_active?: boolean
+          outcomes?: Json
+          price_ngn?: number
+          slug: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          anchor_price_ngn?: number
+          badge?: string | null
+          created_at?: string
+          duration_hours?: number
+          headline?: string
+          id?: string
+          is_active?: boolean
+          outcomes?: Json
+          price_ngn?: number
+          slug?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       email_campaigns: {
         Row: {
           body_html: string
@@ -970,6 +1018,56 @@ export type Database = {
           reason?: string
         }
         Relationships: []
+      }
+      training_enrollments: {
+        Row: {
+          amount_paid: number
+          country: string
+          course_id: string
+          created_at: string
+          email: string
+          enrolled_at: string | null
+          full_name: string
+          id: string
+          payment_reference: string
+          payment_status: string
+          phone: string
+        }
+        Insert: {
+          amount_paid?: number
+          country?: string
+          course_id: string
+          created_at?: string
+          email: string
+          enrolled_at?: string | null
+          full_name: string
+          id?: string
+          payment_reference: string
+          payment_status?: string
+          phone: string
+        }
+        Update: {
+          amount_paid?: number
+          country?: string
+          course_id?: string
+          created_at?: string
+          email?: string
+          enrolled_at?: string | null
+          full_name?: string
+          id?: string
+          payment_reference?: string
+          payment_status?: string
+          phone?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "training_enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
