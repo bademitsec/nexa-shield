@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TrainingRouteImport } from './routes/training'
 import { Route as ShopRouteImport } from './routes/shop'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as OrdersRouteImport } from './routes/orders'
@@ -21,6 +20,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TrainingIndexRouteImport } from './routes/training.index'
 import { Route as CareersIndexRouteImport } from './routes/careers.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ShopSlugRouteImport } from './routes/shop.$slug'
@@ -44,11 +44,6 @@ import { Route as AdminOrdersIdRouteImport } from './routes/admin.orders.$id'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaystackWebhookRouteImport } from './routes/api.public.paystack.webhook'
 
-const TrainingRoute = TrainingRouteImport.update({
-  id: '/training',
-  path: '/training',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
@@ -102,6 +97,11 @@ const AccountRoute = AccountRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrainingIndexRoute = TrainingIndexRouteImport.update({
+  id: '/training/',
+  path: '/training/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CareersIndexRoute = CareersIndexRouteImport.update({
@@ -230,7 +230,6 @@ export interface FileRoutesByFullPath {
   '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
-  '/training': typeof TrainingRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
@@ -250,6 +249,7 @@ export interface FileRoutesByFullPath {
   '/shop/$slug': typeof ShopSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/careers/': typeof CareersIndexRoute
+  '/training/': typeof TrainingIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -265,7 +265,6 @@ export interface FileRoutesByTo {
   '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
-  '/training': typeof TrainingRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
@@ -285,6 +284,7 @@ export interface FileRoutesByTo {
   '/shop/$slug': typeof ShopSlugRoute
   '/admin': typeof AdminIndexRoute
   '/careers': typeof CareersIndexRoute
+  '/training': typeof TrainingIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -302,7 +302,6 @@ export interface FileRoutesById {
   '/orders': typeof OrdersRouteWithChildren
   '/portfolio': typeof PortfolioRouteWithChildren
   '/shop': typeof ShopRouteWithChildren
-  '/training': typeof TrainingRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/campaigns': typeof AdminCampaignsRoute
   '/admin/content': typeof AdminContentRoute
@@ -322,6 +321,7 @@ export interface FileRoutesById {
   '/shop/$slug': typeof ShopSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/careers/': typeof CareersIndexRoute
+  '/training/': typeof TrainingIndexRoute
   '/admin/orders/$id': typeof AdminOrdersIdRoute
   '/api/public/paystack/webhook': typeof ApiPublicPaystackWebhookRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
@@ -340,7 +340,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/portfolio'
     | '/shop'
-    | '/training'
     | '/admin/applications'
     | '/admin/campaigns'
     | '/admin/content'
@@ -360,6 +359,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/admin/'
     | '/careers/'
+    | '/training/'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
     | '/lovable/email/queue/process'
@@ -375,7 +375,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/portfolio'
     | '/shop'
-    | '/training'
     | '/admin/applications'
     | '/admin/campaigns'
     | '/admin/content'
@@ -395,6 +394,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/admin'
     | '/careers'
+    | '/training'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
     | '/lovable/email/queue/process'
@@ -411,7 +411,6 @@ export interface FileRouteTypes {
     | '/orders'
     | '/portfolio'
     | '/shop'
-    | '/training'
     | '/admin/applications'
     | '/admin/campaigns'
     | '/admin/content'
@@ -431,6 +430,7 @@ export interface FileRouteTypes {
     | '/shop/$slug'
     | '/admin/'
     | '/careers/'
+    | '/training/'
     | '/admin/orders/$id'
     | '/api/public/paystack/webhook'
     | '/lovable/email/queue/process'
@@ -448,25 +448,18 @@ export interface RootRouteChildren {
   OrdersRoute: typeof OrdersRouteWithChildren
   PortfolioRoute: typeof PortfolioRouteWithChildren
   ShopRoute: typeof ShopRouteWithChildren
-  TrainingRoute: typeof TrainingRoute
   CareersSlugRoute: typeof CareersSlugRoute
   ServicesDigitalMarketingRoute: typeof ServicesDigitalMarketingRoute
   ServicesHomeSecurityRoute: typeof ServicesHomeSecurityRoute
   ServicesWebDesignRoute: typeof ServicesWebDesignRoute
   CareersIndexRoute: typeof CareersIndexRoute
+  TrainingIndexRoute: typeof TrainingIndexRoute
   ApiPublicPaystackWebhookRoute: typeof ApiPublicPaystackWebhookRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/training': {
-      id: '/training'
-      path: '/training'
-      fullPath: '/training'
-      preLoaderRoute: typeof TrainingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/shop': {
       id: '/shop'
       path: '/shop'
@@ -542,6 +535,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/training/': {
+      id: '/training/'
+      path: '/training'
+      fullPath: '/training/'
+      preLoaderRoute: typeof TrainingIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/careers/': {
@@ -796,12 +796,12 @@ const rootRouteChildren: RootRouteChildren = {
   OrdersRoute: OrdersRouteWithChildren,
   PortfolioRoute: PortfolioRouteWithChildren,
   ShopRoute: ShopRouteWithChildren,
-  TrainingRoute: TrainingRoute,
   CareersSlugRoute: CareersSlugRoute,
   ServicesDigitalMarketingRoute: ServicesDigitalMarketingRoute,
   ServicesHomeSecurityRoute: ServicesHomeSecurityRoute,
   ServicesWebDesignRoute: ServicesWebDesignRoute,
   CareersIndexRoute: CareersIndexRoute,
+  TrainingIndexRoute: TrainingIndexRoute,
   ApiPublicPaystackWebhookRoute: ApiPublicPaystackWebhookRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
